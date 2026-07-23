@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarIA — Agente de bar y restaurante</title>
+<meta name="description" content="Agente de bar y restaurante con IA: costea tragos y platos, consulta normativa provincial y calcula sueldos UTHGRA. Tus datos siempre en tu navegador.">
+<meta name="theme-color" content="#8B5CF6">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="manifest" href="site.webmanifest">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0A0A14;--bg-2:#14111F;--bg-3:#1C1830;--bg-soft:#0E0C18;
+  --border:#2A2340;--border-soft:#1E1930;
+  --text:#F0EEF8;--mid:#A79FC0;--dim:#6B6285;
+  --brand:#8B5CF6;--brand-soft:#C4B5FD;--brand-2:#F5B841;--brand-2-soft:#FCD34D;
+  --ok:#10B981;--ok-soft:#34D399;--red:#F87171;
+  --serif:'Playfair Display',Georgia,serif;
+  --sans:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --radius:14px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);color:var(--text);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* ============ PANTALLA DE LOGIN / API KEY ============ */
+#loginScreen{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:radial-gradient(ellipse at top,rgba(139,92,246,.12),transparent 60%),var(--bg);
+}
+.login-card{width:100%;max-width:420px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;padding:36px 32px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:6px}
+.login-logo img{width:44px;height:44px;border-radius:11px}
+.login-logo .name{font-family:var(--serif);font-size:26px;font-weight:700;color:#fff}
+.login-logo .name em{font-style:italic;color:var(--brand-soft)}
+.login-sub{text-align:center;color:var(--mid);font-size:13.5px;margin-bottom:28px}
+
+.login-step{display:none}
+.login-step.active{display:block}
+.step-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-soft);margin-bottom:14px}
+.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;background:#fff;color:#1f1f1f;border:none;border-radius:11px;font-weight:600;font-size:14.5px;margin-bottom:14px}
+.google-btn:hover{background:#f2f2f2}
+.skip-link{display:block;text-align:center;font-size:12.5px;color:var(--dim);text-decoration:underline;margin-top:4px}
+
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--mid);margin-bottom:7px}
+.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:12px 14px;font-size:14.5px;color:#fff}
+.field input:focus,.field select:focus{outline:none;border-color:var(--brand)}
+.field-hint{font-size:12px;color:var(--dim);margin-top:7px;line-height:1.5}
+.field-hint a{color:var(--brand-soft);text-decoration:none}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:11px;font-weight:600;font-size:14.5px;border:none;transition:all .2s;width:100%}
+.btn-primary{background:linear-gradient(135deg,var(--brand),#6D28D9);color:#fff;box-shadow:0 4px 20px rgba(139,92,246,.32)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(139,92,246,.42)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.trial-note{margin-top:22px;padding-top:20px;border-top:1px solid var(--border-soft);font-size:12px;color:var(--dim);line-height:1.7;text-align:center}
+.trial-note b{color:var(--brand-2-soft)}
+
+/* ============ PANTALLA DE PRUEBA VENCIDA ============ */
+#expiredScreen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
+.expired-card{width:100%;max-width:440px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;padding:38px 32px;text-align:center}
+.expired-card img{width:52px;height:52px;border-radius:12px;margin-bottom:14px}
+.expired-card h2{font-family:var(--serif);font-size:22px;margin-bottom:10px}
+.expired-card p{color:var(--mid);font-size:14px;margin-bottom:22px;line-height:1.6}
+.unlock-row{display:flex;gap:8px;margin-top:18px}
+.unlock-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:#fff;font-size:13.5px}
+.unlock-row button{padding:11px 16px;background:var(--bg-3);border:1px solid var(--border);border-radius:10px;color:var(--brand-soft);font-weight:600;font-size:13px}
+.expired-links{margin-top:18px;font-size:12px;color:var(--dim)}
+.expired-links a{color:var(--brand-soft);text-decoration:none}
+
+/* ============ APP PRINCIPAL ============ */
+#app{display:none;min-height:100vh;grid-template-columns:260px 1fr}
+#app.active{display:grid}
+
+/* Sidebar */
+.sidebar{background:var(--bg-2);border-right:1px solid var(--border-soft);padding:20px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.side-logo{display:flex;align-items:center;gap:9px;text-decoration:none;padding:6px 8px 18px}
+.side-logo img{width:30px;height:30px;border-radius:8px}
+.side-logo .name{font-family:var(--serif);font-size:17px;font-weight:700;color:#fff}
+.side-logo .name em{font-style:italic;color:var(--brand-soft)}
+.side-guide{font-size:11.5px;color:var(--dim);text-decoration:none;padding:0 8px 16px;display:block}
+.side-guide:hover{color:var(--brand-soft)}
+
+.tab-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:10px;background:none;border:none;color:var(--mid);font-size:13.5px;font-weight:500;text-align:left;margin-bottom:2px;transition:all .15s}
+.tab-btn:hover{background:var(--bg-3);color:#fff}
+.tab-btn.active{background:color-mix(in srgb, var(--brand) 14%, transparent);color:var(--brand-soft);font-weight:600}
+.tab-btn .tab-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.tab-btn .soon{margin-left:auto;font-size:9px;color:var(--dim);background:var(--bg);padding:2px 6px;border-radius:999px}
+
+.sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border-soft)}
+.trial-pill{font-size:11px;color:var(--brand-2-soft);background:color-mix(in srgb, var(--brand-2) 12%, transparent);padding:7px 10px;border-radius:9px;margin-bottom:8px;text-align:center}
+.logout-btn{width:100%;padding:8px;background:none;border:1px solid var(--border);border-radius:9px;color:var(--dim);font-size:12px}
+.logout-btn:hover{color:var(--red);border-color:var(--red)}
+
+/* Main area */
+.main{overflow-y:auto;height:100vh}
+.tab-panel{display:none;padding:28px 32px;max-width:920px;margin:0 auto}
+.tab-panel.active{display:block}
+.panel-head{margin-bottom:20px}
+.panel-head h2{font-family:var(--serif);font-size:22px;margin-bottom:6px}
+.panel-head p{color:var(--mid);font-size:13.5px}
+
+/* Chat */
+.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 56px)}
+.chat-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border-soft);background:var(--bg-soft)}
+.chat-topbar h2{font-family:var(--serif);font-size:18px}
+.model-select{background:var(--bg-2);border:1px solid var(--border);border-radius:9px;padding:7px 10px;color:var(--mid);font-size:12.5px}
+.chat-messages{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:14px;max-width:820px;margin:0 auto;width:100%}
+.msg{max-width:78%;padding:13px 16px;border-radius:16px;font-size:14.5px;line-height:1.6;white-space:pre-wrap}
+.msg.user{align-self:flex-end;background:var(--bg-3);border-bottom-right-radius:5px}
+.msg.bot{align-self:flex-start;background:color-mix(in srgb, var(--brand) 10%, var(--bg-2));border:1px solid color-mix(in srgb, var(--brand) 22%, transparent);border-bottom-left-radius:5px}
+.msg.bot.loading{color:var(--dim);font-style:italic}
+.chat-input-wrap{padding:16px 28px 22px;border-top:1px solid var(--border-soft);background:var(--bg-soft)}
+.chat-input-row{max-width:820px;margin:0 auto;display:flex;gap:10px;align-items:flex-end}
+.chat-input-row textarea{flex:1;background:var(--bg-2);border:1px solid var(--border);border-radius:14px;padding:12px 16px;color:#fff;font-size:14.5px;resize:none;min-height:48px;max-height:140px}
+.chat-input-row textarea:focus{outline:none;border-color:var(--brand)}
+.chat-send{background:linear-gradient(135deg,var(--brand),#6D28D9);color:#fff;border:none;border-radius:12px;padding:0 20px;height:48px;font-weight:600;font-size:14px}
+.chat-send:disabled{opacity:.5}
+.chat-attach{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;width:48px;height:48px;color:var(--mid);font-size:18px}
+
+/* Placeholder "próximamente" */
+.soon-box{background:var(--bg-2);border:1px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--dim)}
+.soon-box .icon{font-size:32px;margin-bottom:12px}
+.soon-box h3{color:var(--mid);font-family:var(--serif);font-size:18px;margin-bottom:6px}
+.soon-box p{font-size:13.5px;max-width:400px;margin:0 auto}
+
+@media(max-width:860px){
+  #app{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;z-index:200;transform:translateX(-100%);transition:transform .25s}
+  .sidebar.open{transform:translateX(0)}
+  .main{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="favicon-192.png" alt="BarIA">
+      <div class="name">Bar<em>IA</em></div>
+    </div>
+    <p class="login-sub">Tu asistente de costeo y normativa</p>
+
+    <!-- Paso 1 -->
+    <div class="login-step active" id="step1">
+      <div class="step-label">Paso 1 — Identificate con Google</div>
+      <button class="google-btn" onclick="mockGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.68-3.87 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
+        Continuar con Google
+      </button>
+      <a class="skip-link" onclick="skipGoogle()">Continuar sin Google (probar más rápido)</a>
+    </div>
+
+    <!-- Paso 2 -->
+    <div class="login-step" id="step2">
+      <div class="step-label">Paso 2 — Tu API key de Anthropic</div>
+      <div class="field">
+        <label for="apiKeyInput">API Key</label>
+        <input id="apiKeyInput" type="password" placeholder="sk-ant-...">
+        <div class="field-hint">Obtené tu key gratis en <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> →</div>
+      </div>
+      <div class="field">
+        <label for="modelSelectLogin">Modelo</label>
+        <select id="modelSelectLogin">
+          <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (rápido y económico)</option>
+          <option value="claude-sonnet-5">Claude Sonnet 5 (recetas complejas)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="enterApp()">Ingresar al agente →</button>
+    </div>
+
+    <div class="trial-note">
+      🎁 <b>5 días de prueba gratis</b> con acceso completo.<br>
+      🔒 <b>Tu privacidad:</b> la API key se guarda solo en tu navegador y se borra al cerrar la pestaña. Este sitio no tiene backend ni registra tus datos.
+    </div>
+  </div>
+</div>
+
+<!-- ============ PRUEBA VENCIDA ============ -->
+<div id="expiredScreen">
+  <div class="expired-card">
+    <img src="favicon-192.png" alt="BarIA">
+    <h2>Tu prueba terminó</h2>
+    <p>Los 5 días de prueba gratuita de BarIA llegaron a su fin. Para seguir usándolo con onboarding 1 a 1 y soporte por WhatsApp, pasate al Plan Bar/Restaurante.</p>
+    <a class="btn btn-primary" style="text-decoration:none" href="https://wa.me/5493425387578?text=Hola,%20se%20me%20venci%C3%B3%20la%20prueba%20de%20BarIA%20y%20quiero%20contratar%20el%20Plan%20Bar%2FRestaurante">Contratar por WhatsApp →</a>
+    <div class="unlock-row">
+      <input type="text" id="unlockCode" placeholder="¿Ya tenés tu código de acceso?">
+      <button onclick="tryUnlock()">Desbloquear</button>
+    </div>
+    <div class="expired-links">¿Creés que es un error? Escribinos por el mismo WhatsApp y lo revisamos. — <a onclick="resetTrial()">Salir</a></div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <aside class="sidebar" id="sidebar">
+    <a href="index.html" class="side-logo">
+      <img src="favicon-192.png" alt="BarIA">
+      <div class="name">Bar<em>IA</em></div>
+    </a>
+    <a href="guia-completa.html" target="_blank" class="side-guide">📚 Guía</a>
+
+    <button class="tab-btn active" data-tab="chat" onclick="switchTab('chat')"><span class="tab-icon">💬</span> Chat de bar/restaurante</button>
+    <button class="tab-btn" data-tab="tragos" onclick="switchTab('tragos')"><span class="tab-icon">🍸</span> Costeo de tragos</button>
+    <button class="tab-btn" data-tab="platos" onclick="switchTab('platos')"><span class="tab-icon">🍽️</span> Costeo de platos</button>
+    <button class="tab-btn" data-tab="normativa" onclick="switchTab('normativa')"><span class="tab-icon">⚖️</span> Normativa</button>
+    <button class="tab-btn" data-tab="uthgra" onclick="switchTab('uthgra')"><span class="tab-icon">👥</span> Sueldos UTHGRA</button>
+    <button class="tab-btn" data-tab="vencimientos" onclick="switchTab('vencimientos')"><span class="tab-icon">📅</span> Vencimientos <span class="soon">pronto</span></button>
+    <button class="tab-btn" data-tab="proveedores" onclick="switchTab('proveedores')"><span class="tab-icon">🧾</span> Proveedores <span class="soon">pronto</span></button>
+    <button class="tab-btn" data-tab="mermas" onclick="switchTab('mermas')"><span class="tab-icon">📉</span> Mermas <span class="soon">fase 2</span></button>
+    <button class="tab-btn" data-tab="menu" onclick="switchTab('menu')"><span class="tab-icon">📈</span> Ingeniería de menú <span class="soon">fase 3</span></button>
+    <button class="tab-btn" data-tab="memoria" onclick="switchTab('memoria')"><span class="tab-icon">🔄</span> Backup / Memoria</button>
+
+    <div class="sidebar-foot">
+      <div class="trial-pill" id="trialPill">🎁 4 días de prueba restantes</div>
+      <button class="logout-btn" onclick="resetTrial()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- TAB: CHAT -->
+    <div class="tab-panel active" id="tab-chat" style="padding:0">
+      <div class="chat-wrap">
+        <div class="chat-topbar">
+          <h2>💬 Chat de bar/restaurante</h2>
+          <select class="model-select" id="modelSelectChat">
+            <option value="claude-haiku-4-5-20251001">Haiku 4.5</option>
+            <option value="claude-sonnet-5">Sonnet 5</option>
+          </select>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <div class="msg bot">Hola 🍸 Soy BarIA. Preguntame sobre costeo de tragos o platos, pour cost, food cost, normativa provincial, sueldos UTHGRA, o adjuntá una foto de una receta y la analizo en la conversación.</div>
+        </div>
+        <div class="chat-input-wrap">
+          <div class="chat-input-row">
+            <button class="chat-attach" title="Adjuntar foto o documento" onclick="document.getElementById('fileInput').click()">📎</button>
+            <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none">
+            <textarea id="chatInput" placeholder="Ej: Fernet 50ml, Coca 200ml, hielo — lo vendo a $4.500, ¿cómo va el margen?" rows="1" onkeydown="handleChatKey(event)"></textarea>
+            <button class="chat-send" id="chatSendBtn" onclick="sendMessage()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: COSTEO TRAGOS (placeholder, se completa después) -->
+    <div class="tab-panel" id="tab-tragos">
+      <div class="panel-head"><h2>🍸 Costeo de tragos</h2><p>Pour cost, rendimiento de botella y margen sugerido.</p></div>
+      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, usá el Chat para costear tragos — funciona igual, solo que sin la calculadora visual todavía.</p></div>
+    </div>
+
+    <!-- TAB: COSTEO PLATOS (placeholder) -->
+    <div class="tab-panel" id="tab-platos">
+      <div class="panel-head"><h2>🍽️ Costeo de platos</h2><p>Food cost por porción desde tu ficha técnica.</p></div>
+      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, usá el Chat para costear platos — subí la foto de la ficha o escribí la receta.</p></div>
+    </div>
+
+    <!-- TAB: NORMATIVA (placeholder) -->
+    <div class="tab-panel" id="tab-normativa">
+      <div class="panel-head"><h2>⚖️ Normativa por provincia</h2><p>Horarios de expendio, habilitaciones y bromatología.</p></div>
+      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, preguntale al Chat: "¿Cuál es el horario de expendio de alcohol en CABA?"</p></div>
+    </div>
+
+    <!-- TAB: UTHGRA (placeholder) -->
+    <div class="tab-panel" id="tab-uthgra">
+      <div class="panel-head"><h2>👥 Sueldos UTHGRA</h2><p>Categorías, básicos vigentes y adicionales.</p></div>
+      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, preguntale al Chat: "¿Cuánto cobra un mozo categoría 3 en octubre 2025?"</p></div>
+    </div>
+
+    <!-- TAB: VENCIMIENTOS (placeholder) -->
+    <div class="tab-panel" id="tab-vencimientos">
+      <div class="panel-head"><h2>📅 Vencimientos de habilitaciones</h2><p>Libreta sanitaria, carnet y habilitación municipal.</p></div>
+      <div class="soon-box"><div class="icon">⏳</div><h3>Próximamente</h3><p>Vas a poder cargar tus vencimientos y recibir alertas antes de que venzan.</p></div>
+    </div>
+
+    <!-- TAB: PROVEEDORES (placeholder) -->
+    <div class="tab-panel" id="tab-proveedores">
+      <div class="panel-head"><h2>🧾 Comparador de proveedores</h2><p>Cargá precios y compará por insumo.</p></div>
+      <div class="soon-box"><div class="icon">⏳</div><h3>Próximamente</h3><p>El mismo comparador que usa ConstructorIA, adaptado a insumos de bar y cocina.</p></div>
+    </div>
+
+    <!-- TAB: MERMAS (placeholder, fase 2) -->
+    <div class="tab-panel" id="tab-mermas">
+      <div class="panel-head"><h2>📉 Control de mermas</h2><p>Stock teórico vs. real de barra y cocina.</p></div>
+      <div class="soon-box"><div class="icon">🔄</div><h3>Fase 2 del roadmap</h3><p>Todavía no está disponible — mirá el roadmap público en la landing.</p></div>
+    </div>
+
+    <!-- TAB: INGENIERÍA DE MENÚ (placeholder, fase 3) -->
+    <div class="tab-panel" id="tab-menu">
+      <div class="panel-head"><h2>📈 Ingeniería de menú</h2><p>Rentabilidad de cada ítem de tu carta.</p></div>
+      <div class="soon-box"><div class="icon">⏳</div><h3>Fase 3 del roadmap</h3><p>Todavía no está disponible — mirá el roadmap público en la landing.</p></div>
+    </div>
+
+    <!-- TAB: MEMORIA / BACKUP (placeholder) -->
+    <div class="tab-panel" id="tab-memoria">
+      <div class="panel-head"><h2>🔄 Respaldo y sincronización</h2><p>Tus costeos hoy viven solo en este navegador.</p></div>
+      <div class="soon-box"><div class="icon">📎</div><h3>Conectá tu Google Sheets</h3><p>Respaldo automático y acceso desde otro dispositivo — próximamente en esta pestaña.</p></div>
+    </div>
+  </main>
+</div>
+
+<script>
+/* ============ ESTADO Y STORAGE ============ */
+const TRIAL_DAYS = 5;
+
+function getState(){
+  try{ return JSON.parse(localStorage.getItem('baria_state') || '{}'); }catch(e){ return {}; }
+}
+function setState(patch){
+  const s = Object.assign(getState(), patch);
+  localStorage.setItem('baria_state', JSON.stringify(s));
+  return s;
+}
+
+/* ============ LOGIN FLOW ============ */
+function mockGoogleLogin(){
+  // Placeholder: acá va la integración real de Google Identity Services
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+}
+function skipGoogle(){
+  document.getElementById('step1').classList.remove('active');
+  document.getElementById('step2').classList.add('active');
+}
+
+function enterApp(){
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if(!key){ alert('Pegá tu API key de Anthropic para continuar.'); return; }
+  const model = document.getElementById('modelSelectLogin').value;
+
+  sessionStorage.setItem('baria_api_key', key);
+  sessionStorage.setItem('baria_model', model);
+
+  let s = getState();
+  if(!s.trialStart){ s = setState({ trialStart: Date.now() }); }
+
+  showApp();
+}
+
+function daysLeft(){
+  const s = getState();
+  if(!s.trialStart) return TRIAL_DAYS;
+  const elapsed = (Date.now() - s.trialStart) / (1000*60*60*24);
+  return Math.max(0, Math.ceil(TRIAL_DAYS - elapsed));
+}
+
+function showApp(){
+  const left = daysLeft();
+  if(left <= 0 && !getState().unlocked){
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('expiredScreen').style.display = 'flex';
+    return;
+  }
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('expiredScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  document.getElementById('trialPill').textContent = getState().unlocked
+    ? '✓ Plan Bar/Restaurante activo'
+    : `🎁 ${left} día${left===1?'':'s'} de prueba restantes`;
+}
+
+function tryUnlock(){
+  const code = document.getElementById('unlockCode').value.trim();
+  // Placeholder: reemplazar por validación real contra tu propio backend/lista de códigos
+  if(code.length >= 6){
+    setState({ unlocked: true, unlockCode: code });
+    showApp();
+  } else {
+    alert('Código inválido. Si contrataste el plan, revisá el WhatsApp donde te lo enviamos.');
+  }
+}
+
+function resetTrial(){
+  sessionStorage.removeItem('baria_api_key');
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('expiredScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('step2').classList.remove('active');
+  document.getElementById('step1').classList.add('active');
+}
+
+// Al cargar: si ya hay key en sessionStorage (misma pestaña), entra directo
+window.addEventListener('DOMContentLoaded', () => {
+  if(sessionStorage.getItem('baria_api_key')){
+    showApp();
+  }
+});
+
+/* ============ TABS ============ */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+/* ============ CHAT ============ */
+const SYSTEM_PROMPT = `Sos BarIA, un asistente experto para dueños y encargados de bares, restaurantes y cervecerías en Argentina.
+Tus especialidades:
+- Costeo de tragos: pour cost, rendimiento de botella, precio sugerido según margen objetivo. Pour cost ideal: 15% destilados, 20% cerveza tirada, 25% cerveza en botella, 30-40% vino (promedio general 18-24%).
+- Costeo de platos: food cost por porción desde una ficha técnica. Food cost ideal en gastronomía argentina: 28-33% (referencia FEHGRA).
+- Normativa provincial: horarios de expendio de alcohol, habilitaciones municipales, bromatología, libreta sanitaria — la normativa varía mucho por provincia y municipio, aclará siempre que conviene confirmar con la autoridad local.
+- Sueldos UTHGRA: categorías 1-6, básicos, adicionales convencionales, contribución solidaria.
+Sé directo y concreto: cuando alguien te da una receta, calculá el costo con los datos que tengas y pedí los precios de insumos que falten. No inventes precios de proveedores — si no los tenés, pedilos. Siempre aclará que las cifras normativas y de convenio deben confirmarse porque cambian con frecuencia.`;
+
+function handleChatKey(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+let chatHistory = [];
+
+async function sendMessage(){
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  const messagesEl = document.getElementById('chatMessages');
+  messagesEl.insertAdjacentHTML('beforeend', `<div class="msg user">${escapeHtml(text)}</div>`);
+  chatHistory.push({ role: 'user', content: text });
+  input.value = '';
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  const loadingId = 'loading-' + Date.now();
+  messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot loading" id="${loadingId}">Pensando...</div>`);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  const apiKey = sessionStorage.getItem('baria_api_key');
+  const model = document.getElementById('modelSelectChat').value || sessionStorage.getItem('baria_model') || 'claude-haiku-4-5-20251001';
+
+  try{
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: model,
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT,
+        messages: chatHistory
+      })
+    });
+    const data = await res.json();
+    document.getElementById(loadingId).remove();
+
+    if(data.error){
+      messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot" style="color:var(--red)">Error: ${escapeHtml(data.error.message || 'algo salió mal')}</div>`);
+    } else {
+      const answer = (data.content || []).map(b => b.text || '').join('\n');
+      chatHistory.push({ role: 'assistant', content: answer });
+      messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot">${escapeHtml(answer)}</div>`);
+    }
+  } catch(err){
+    document.getElementById(loadingId).remove();
+    messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot" style="color:var(--red)">No se pudo conectar con Anthropic. Revisá tu API key y conexión.</div>`);
+  }
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function escapeHtml(str){
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
