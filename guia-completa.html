@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Guía completa de uso — BarIA">
-    <meta name="theme-color" content="#0A0C12">
-    <link rel="icon" type="image/svg+xml" href="icon-transparent.svg">
+    <meta name="theme-color" content="#8B5CF6">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="shortcut icon" href="favicon.ico">
@@ -17,8 +17,8 @@
             --bg: #0A0C12;
             --fg: #E8E9EB;
             --fg-muted: #9CA3AF;
-            --brand: #E5348B;
-            --brand-2: #22D3EE;
+            --brand: #8B5CF6;
+            --brand-2: #F5B841;
             --border: #1F2937;
             --surface: #111827;
         }
@@ -184,7 +184,7 @@
         }
 
         code {
-            background: rgba(34, 211, 238, 0.1);
+            background: rgba(245, 184, 65, 0.1);
             padding: 0.2rem 0.4rem;
             border-radius: 3px;
             font-family: 'IBM Plex Mono', monospace;
@@ -193,7 +193,7 @@
         }
 
         .highlight {
-            background: rgba(229, 52, 139, 0.1);
+            background: rgba(139, 92, 246, 0.1);
             padding: 1.5rem;
             border-left: 3px solid var(--brand);
             border-radius: 4px;
@@ -201,7 +201,7 @@
         }
 
         .highlight.info {
-            background: rgba(34, 211, 238, 0.1);
+            background: rgba(245, 184, 65, 0.1);
             border-left-color: var(--brand-2);
         }
 
@@ -252,7 +252,7 @@
         }
 
         .comparison-table tr:hover {
-            background: rgba(229, 52, 139, 0.05);
+            background: rgba(139, 92, 246, 0.05);
         }
 
         @media (max-width: 768px) {
@@ -278,7 +278,7 @@
     <header>
         <div class="header-content">
             <a href="index.html" class="logo">
-                <img src="icon-transparent.svg" alt="BarIA" class="logo-icon">
+                <img src="favicon-192.png" alt="BarIA" class="logo-icon">
                 BarIA
             </a>
             <nav>
@@ -294,7 +294,7 @@
                 <ul>
                     <li><a href="#intro">Introducción</a></li>
                     <li><a href="#empezar">Empezar</a></li>
-                    <li><a href="#costeo">Costeo de tragos</a></li>
+                    <li><a href="#costeo">Costeo de tragos y platos</a></li>
                     <li><a href="#normativa">Normativa provincial</a></li>
                     <li><a href="#uthgra">Cálculo UTHGRA</a></li>
                     <li><a href="#sheets">Google Sheets</a></li>
@@ -341,14 +341,14 @@
                 <p>Ya podés empezar a costeár tragos, consultar normativa, lo que necesites.</p>
             </div>
 
-            <h2 id="costeo">3. Costeo de tragos</h2>
-            <p>La feature estrella de BarIA. Tres maneras de hacerlo:</p>
+            <h2 id="costeo">3. Costeo de tragos y platos</h2>
+            <p>La feature estrella de BarIA. Funciona igual para la carta de tragos que para la de comidas. Tres maneras de hacerlo:</p>
 
             <h3>Opción A: Foto de la receta</h3>
-            <p>Sacá una foto de tu ficta técnica (o de la receta escrita en papel) y subila. BarIA la lee automáticamente y extrae ingredientes, cantidades, marcas.</p>
+            <p>Sacá una foto de tu ficha técnica (trago o plato, o de la receta escrita en papel) y subila. BarIA la lee automáticamente y extrae ingredientes, cantidades, marcas.</p>
 
             <h3>Opción B: Texto directo</h3>
-            <p>Escribí la receta en el chat. Ejemplo: "Fernet 50ml, Coca 200ml, hielo, limón". BarIA la entiende y calcula el costo.</p>
+            <p>Escribí la receta en el chat. Ejemplo: "Fernet 50ml, Coca 200ml, hielo, limón" o "Milanesa napolitana: 200g nalga, 100g queso, 80g jamón, guarnición papas". BarIA la entiende y calcula el costo.</p>
 
             <h3>Opción C: Excel o planilla</h3>
             <p>Si tenés tus recetas en una planilla Excel, podés subirlas también. BarIA las procesa automáticamente.</p>
@@ -357,13 +357,21 @@
                 <strong>💡 Tip:</strong> Guardá los precios de tus proveedores al día. BarIA usa los que vos le indiques para hacer el cálculo — si están desactualizados, el costo va a estar mal.
             </div>
 
-            <h3>Qué te devuelve BarIA:</h3>
+            <h3>Qué te devuelve BarIA para un trago:</h3>
             <ul>
                 <li><strong>Costo por trago:</strong> cuánto te sale ese trago a vos (suma de ingredientes)</li>
                 <li><strong>Pour cost %:</strong> qué porcentaje del precio de venta es el costo (ideal: 18-24%)</li>
                 <li><strong>Rendimiento de botella:</strong> cuántos tragos salen de una botella de 750ml</li>
                 <li><strong>Precio sugerido:</strong> según tu margen objetivo, cuánto deberías cobrar</li>
                 <li><strong>Alerta de margen:</strong> si es muy bajo, te lo advierte</li>
+            </ul>
+
+            <h3>Qué te devuelve BarIA para un plato:</h3>
+            <ul>
+                <li><strong>Costo por porción:</strong> suma de insumos según la cantidad que rinde la receta</li>
+                <li><strong>Food cost %:</strong> qué porcentaje del precio de venta es el costo (ideal: 28-33% en gastronomía argentina)</li>
+                <li><strong>Precio sugerido:</strong> según tu margen objetivo</li>
+                <li><strong>Alerta de margen:</strong> si el food cost está por encima del ideal, te lo advierte</li>
             </ul>
 
             <h2 id="normativa">4. Normativa provincial</h2>
@@ -399,8 +407,8 @@
                 <strong>ℹ️:</strong> Consultá a BarIA: "¿Cuánto debo pagar a un mozo categoría 3 en octubre 2025?" y te da el cálculo exacto con todos los adicionales.
             </div>
 
-            <h2 id="sheets">6. Google Sheets (Plan Bar)</h2>
-            <p>Si contratás el Plan Bar, podés conectar tu Google Sheets para que tus costeos, márgenes y consultas se guarden automáticamente.</p>
+            <h2 id="sheets">6. Google Sheets (Plan Bar/Restaurante)</h2>
+            <p>Si contratás el Plan Bar/Restaurante, podés conectar tu Google Sheets para que tus costeos, márgenes y consultas se guarden automáticamente.</p>
 
             <h3>Cómo funciona:</h3>
             <ol>
@@ -423,10 +431,10 @@
             <p>BarIA deja de funcionar hasta que recargues crédito en tu cuenta de Anthropic. Simple así.</p>
 
             <h3>¿Puedo cambiar de navegador?</h3>
-            <p>Sí, pero tenés que ingresar de nuevo con Google y pegar tu API key de nuevo (no se comparte entre navegadores). Con el Plan Bar, todo se guarda en tu Google Sheets de todas formas.</p>
+            <p>Sí, pero tenés que ingresar de nuevo con Google y pegar tu API key de nuevo (no se comparte entre navegadores). Con el Plan Bar/Restaurante, todo se guarda en tu Google Sheets de todas formas.</p>
 
             <h3>¿Y si tengo problemas técnicos?</h3>
-            <p>Escribinos por <a href="https://wa.me/5493425387578">WhatsApp</a> o <a href="mailto:labstudio.pna@gmail.com">email</a>. El Plan Bar incluye soporte directo.</p>
+            <p>Escribinos por <a href="https://wa.me/5493425387578">WhatsApp</a> o <a href="mailto:labstudio.pna@gmail.com">email</a>. El Plan Bar/Restaurante incluye soporte directo.</p>
 
             <p style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--fg-muted);">
                 Última actualización: Julio 2026 · BarIA por <a href="https://labstudiopna.github.io" style="color: var(--brand-2);">LABStudio.pna</a>

@@ -1,22 +1,22 @@
 {
-  "name": "BarIA — Asistente de Costeo para Bares",
+  "name": "BarIA — Asistente de Costeo para Bares y Restaurantes",
   "short_name": "BarIA",
-  "description": "Costeá tragos, controlá márgenes y consulta normativa provincial con IA",
+  "description": "Costeá tragos y platos, controlá márgenes y consulta normativa provincial con IA",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0A0C12",
-  "theme_color": "#E5348B",
+  "theme_color": "#8B5CF6",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "favicon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "favicon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
@@ -26,18 +26,6 @@
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshot-narrow.png",
-      "sizes": "540x720",
-      "form_factor": "narrow"
-    },
-    {
-      "src": "screenshot-wide.png",
-      "sizes": "1280x720",
-      "form_factor": "wide"
     }
   ]
 }

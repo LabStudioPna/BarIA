@@ -1,0 +1,52 @@
+<svg viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#3B1F73"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo squircle con degradé violeta -->
+  <rect x="0" y="0" width="192" height="192" rx="42" ry="42" fill="url(#bgGrad)"/>
+
+  <!-- Copa de cóctel (izquierda), glifo plano crema -->
+  <path d="
+    M 28 46
+    Q 28 41 33 41
+    L 79 41
+    Q 84 41 84 46
+    Q 84 51 80 55
+    L 60 78
+    L 60 108
+    L 74 108
+    Q 78 108 78 113
+    Q 78 118 74 118
+    L 38 118
+    Q 34 118 34 113
+    Q 34 108 38 108
+    L 52 108
+    L 52 78
+    L 32 55
+    Q 28 51 28 46
+    Z"
+    fill="#F7F3EC"/>
+
+  <!-- Tenedor (derecha), glifo plano crema -->
+  <rect x="112" y="40" width="7" height="42" rx="3.5" fill="#F7F3EC"/>
+  <rect x="124" y="40" width="7" height="42" rx="3.5" fill="#F7F3EC"/>
+  <rect x="136" y="40" width="7" height="42" rx="3.5" fill="#F7F3EC"/>
+  <path d="M 110 80 L 145 80 L 132 95 L 123 95 Z" fill="#F7F3EC"/>
+  <rect x="123" y="95" width="9" height="53" rx="4.5" fill="#F7F3EC"/>
+
+  <!-- Destello dorado (acento IA), entre copa y tenedor, arriba -->
+  <path d="M 97 22
+    L 101 33
+    L 112 37
+    L 101 41
+    L 97 52
+    L 93 41
+    L 82 37
+    L 93 33
+    Z"
+    fill="#F5B841"/>
+</svg>
