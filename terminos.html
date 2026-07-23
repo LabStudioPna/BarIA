@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Términos de servicio y política de privacidad — BarIA">
+    <meta name="theme-color" content="#0A0C12">
+    <link rel="icon" type="image/svg+xml" href="icon-transparent.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <title>Términos y Privacidad | BarIA</title>
+    <style>
+        :root {
+            --bg: #0A0C12;
+            --fg: #E8E9EB;
+            --fg-muted: #9CA3AF;
+            --brand: #E5348B;
+            --border: #1F2937;
+            --surface: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.8;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 3rem;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--fg);
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta {
+            color: var(--fg-muted);
+            font-size: 0.95rem;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--brand);
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--fg-muted);
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: var(--fg-muted);
+        }
+
+        .highlight {
+            background: rgba(229, 52, 139, 0.1);
+            padding: 1.5rem;
+            border-left: 3px solid var(--brand);
+            border-radius: 4px;
+            margin: 1.5rem 0;
+        }
+
+        a {
+            color: var(--brand);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .last-updated {
+            color: var(--fg-muted);
+            font-size: 0.85rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo">
+                <img src="icon-transparent.svg" alt="BarIA" class="logo-icon">
+                BarIA
+            </a>
+            <h1>Términos y Privacidad</h1>
+            <p class="meta">Última actualización: Julio 2026</p>
+        </header>
+
+        <h2>1. Uso de BarIA</h2>
+        <p>BarIA es una herramienta de apoyo para costeo de bebidas y consultas normativas en bares y restaurantes. No reemplaza a un POS, a un contador ni a asesoría legal formal.</p>
+        <p>Al usar BarIA aceptás que sos responsable de verificar la información normativa con las autoridades competentes de tu jurisdicción. Los horarios, requisitos y regulaciones cambian — BarIA intenta estar actualizado, pero siempre confirmá con organismos oficiales.</p>
+
+        <h2>2. Tu API Key de Anthropic</h2>
+        <p>Para usar BarIA necesitás una API key de Anthropic (gratis desde <a href="https://console.anthropic.com">console.anthropic.com</a>).</p>
+        <div class="highlight">
+            <strong>Tu API key nunca llega a nuestros servidores.</strong> Se almacena únicamente en <code>sessionStorage</code> de tu navegador. Al cerrar la pestaña se borra automáticamente.
+        </div>
+        <p>Vos sos responsable de:</p>
+        <ul>
+            <li>Mantener tu API key confidencial</li>
+            <li>No compartirla con terceros</li>
+            <li>Monitorear tu consumo de crédito en Anthropic (pagás directamente a Anthropic, no a nosotros)</li>
+            <li>Limpiar tu navegador si accedés desde una máquina compartida</li>
+        </ul>
+
+        <h2>3. Privacidad de tus datos</h2>
+        <h3>Qué guardamos</h3>
+        <p>Si contratás el Plan Bar, podés conectar tu Google Sheets personal. Tus datos se guardan en tu propia hoja (en tu Google Drive), no en servidores nuestros.</p>
+        <p>No guardamos:</p>
+        <ul>
+            <li>Tus recetas</li>
+            <li>Tus consultas al chat</li>
+            <li>Tu API key</li>
+            <li>Información de tu bar</li>
+        </ul>
+
+        <h3>Qué pasa con Anthropic</h3>
+        <p>Tu API key va directa a Anthropic. Revisá su <a href="https://www.anthropic.com/privacy">política de privacidad</a> para entender cómo procesan datos. Anthropic puede usar tus inputs para entrenar/mejorar modelos (según sus términos), pero no guardamos copia local.</p>
+
+        <h2>4. Cookies y rastreo</h2>
+        <p>BarIA no usa cookies de rastreo. Solo usamos <code>sessionStorage</code> y <code>localStorage</code> para guardar tu API key y preferencias locales — nada se envía a terceros.</p>
+
+        <h2>5. Plan Estudio / Plan Bar</h2>
+        <p>Si contratás el plan pago (USD 80/mes):</p>
+        <ul>
+            <li>Facturamos directamente a tu email</li>
+            <li>Tus datos de contacto se guardan en nuestro CRM (para soporte y avisos de cambios normativos)</li>
+            <li>Podés cancelar en cualquier momento</li>
+        </ul>
+
+        <h2>6. Limitaciones y exención de responsabilidad</h2>
+        <p>BarIA se proporciona "tal cual" sin garantías. No somos responsables por:</p>
+        <ul>
+            <li>Errores en el costeo (siempre verificá precios de proveedores)</li>
+            <li>Cambios en normativa que no reflejemos a tiempo</li>
+            <li>Multas o sanciones por incumplimiento normativo</li>
+            <li>Caídas de internet o errores en tu API key</li>
+            <li>Decisiones de negocio basadas en los análisis</li>
+        </ul>
+
+        <h2>7. Cambios en estos términos</h2>
+        <p>Podemos actualizar estos términos en cualquier momento. Si hacemos cambios significativos, te avisaremos por email (si estás en el plan pago).</p>
+
+        <h2>8. Contacto</h2>
+        <p>Si tenés preguntas sobre privacidad o estos términos:</p>
+        <ul>
+            <li>WhatsApp: <a href="https://wa.me/5493425387578">+54 9 3425 387578</a></li>
+            <li>Email: <a href="mailto:labstudio.pna@gmail.com">labstudio.pna@gmail.com</a></li>
+        </ul>
+
+        <p class="last-updated">
+            BarIA · Desarrollado por <a href="https://labstudiopna.github.io">LABStudio.pna</a> · Paraná, Entre Ríos, Argentina<br>
+            © 2026 — Todos los derechos reservados
+        </p>
+    </div>
+</body>
+</html>

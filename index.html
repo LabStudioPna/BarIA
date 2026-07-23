@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Asistente IA para bares y restaurantes en Argentina. Costeá tragos, controlá márgenes, normativa por provincia. Sin instalación, tus datos siempre bajo tu control.">
+    <meta name="keywords" content="costeo de tragos, recetas bar, margen, UTHGRA, habilitaciones, normativa argentina, software bar, restaurant IA">
+    <meta property="og:title" content="BarIA — Tu asistente de costeo y normativa">
+    <meta property="og:description" content="Costeá tu trago en segundos. Rendimiento de botella, pour cost, márgenes y normativa por provincia — con IA, sin backend.">
+    <meta property="og:image" content="https://labstudiopna.github.io/BarIA/og-image.png">
+    <meta property="og:url" content="https://labstudiopna.github.io/BarIA/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_AR">
+    <meta property="og:site_name" content="BarIA">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="BarIA — Tu asistente de costeo y normativa">
+    <meta name="twitter:description" content="Costeá tu trago en segundos. Rendimiento de botella, pour cost, márgenes — con IA, sin backend.">
+    <meta name="twitter:image" content="https://labstudiopna.github.io/BarIA/og-image.png">
+    <meta name="theme-color" content="#0A0C12">
+    <link rel="icon" type="image/svg+xml" href="icon-transparent.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BarIA">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>BarIA — Tu asistente de costeo y normativa</title>
+    <style>
+        :root {
+            --bg: #0A0C12;
+            --fg: #E8E9EB;
+            --fg-muted: #9CA3AF;
+            --brand: #E5348B;
+            --brand-2: #22D3EE;
+            --accent-1: #10B981;
+            --accent-2: #F59E0B;
+            --border: #1F2937;
+            --surface: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Tipografía */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        h1 { font-size: 3.5rem; }
+        h2 { font-size: 2.5rem; }
+        h3 { font-size: 1.5rem; }
+
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 12, 18, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--fg);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--fg-muted);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--brand);
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--brand);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            background: #d41f78;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(229, 52, 139, 0.3);
+        }
+
+        .cta-button-secondary {
+            background: transparent;
+            border: 1px solid var(--brand-2);
+            color: var(--brand-2);
+        }
+
+        .cta-button-secondary:hover {
+            background: rgba(34, 211, 238, 0.1);
+            border-color: var(--brand);
+            color: var(--brand);
+        }
+
+        /* Main */
+        main {
+            padding-top: 80px;
+        }
+
+        /* Hero */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+
+        .hero h1 {
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--fg-muted);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 3rem;
+        }
+
+        /* Features */
+        .features {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .features h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--brand);
+            box-shadow: 0 10px 30px rgba(229, 52, 139, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--brand);
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--fg-muted);
+        }
+
+        /* Pricing */
+        .pricing {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .pricing h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2.5rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--brand);
+            box-shadow: 0 20px 40px rgba(229, 52, 139, 0.15);
+            transform: scale(1.05);
+        }
+
+        .pricing-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--brand);
+        }
+
+        .pricing-amount {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--fg);
+            margin: 1.5rem 0;
+        }
+
+        .pricing-amount small {
+            font-size: 1rem;
+            color: var(--fg-muted);
+        }
+
+        .pricing-description {
+            color: var(--fg-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features {
+            text-align: left;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .pricing-features li {
+            list-style: none;
+            padding: 0.5rem 0;
+            color: var(--fg-muted);
+        }
+
+        .pricing-features li:before {
+            content: "✓ ";
+            color: var(--brand-2);
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* FAQ */
+        .faq {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .faq h2 {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .faq-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            border: none;
+            width: 100%;
+            color: var(--fg);
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .faq-question:hover {
+            background: rgba(229, 52, 139, 0.05);
+            color: var(--brand);
+        }
+
+        .faq-question.active {
+            background: rgba(229, 52, 139, 0.1);
+            color: var(--brand);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: rgba(10, 12, 18, 0.5);
+        }
+
+        .faq-answer.open {
+            max-height: 500px;
+        }
+
+        .faq-answer p {
+            padding: 1.5rem;
+            color: var(--fg-muted);
+            font-size: 0.95rem;
+        }
+
+        /* CTA Final */
+        .final-cta {
+            max-width: 800px;
+            margin: 4rem auto;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, rgba(229, 52, 139, 0.1) 0%, rgba(34, 211, 238, 0.1) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .final-cta h3 {
+            margin-bottom: 1rem;
+        }
+
+        .final-cta p {
+            color: var(--fg-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--fg-muted);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.75rem; }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            
+            .pricing-card.featured {
+                transform: scale(1);
+            }
+            
+            header {
+                padding: 1rem;
+            }
+            
+            main {
+                padding-top: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="#" class="logo">
+                <svg class="logo-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(-3, 17)">
+                        <g id="vaso">
+                            <path d="M 70 55 L 58 115 Q 58 128 67 132 L 103 132 Q 112 128 112 115 L 100 55 Z" 
+                                  fill="none" stroke="#E5348B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+                            <ellipse cx="85" cy="85" rx="16" ry="6" fill="#E5348B" opacity="0.35"/>
+                            <line x1="76" y1="93" x2="80" y2="105" stroke="#22D3EE" stroke-width="4" stroke-linecap="round"/>
+                            <line x1="90" y1="93" x2="93" y2="107" stroke="#22D3EE" stroke-width="4" stroke-linecap="round"/>
+                            <line x1="85" y1="55" x2="85" y2="35" stroke="#22D3EE" stroke-width="5" stroke-linecap="round"/>
+                            <circle cx="85" cy="32" r="5.5" fill="#22D3EE"/>
+                        </g>
+                        <g id="tenedor">
+                            <line x1="122" y1="140" x2="140" y2="60" stroke="#22D3EE" stroke-width="7" stroke-linecap="round"/>
+                            <line x1="132" y1="42" x2="132" y2="25" stroke="#E5348B" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="140" y1="42" x2="140" y2="25" stroke="#E5348B" stroke-width="5" stroke-linecap="round"/>
+                            <line x1="148" y1="42" x2="148" y2="25" stroke="#E5348B" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M 132 42 Q 135 48 140 60" fill="none" stroke="#22D3EE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M 140 42 Q 140 48 140 60" fill="none" stroke="#22D3EE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M 148 42 Q 145 48 140 60" fill="none" stroke="#22D3EE" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </g>
+                    </g>
+                </svg>
+                BarIA
+            </a>
+            <nav>
+                <a href="#features">Características</a>
+                <a href="#pricing">Precios</a>
+                <a href="#faq">Preguntas</a>
+                <a href="#contacto">Contacto</a>
+                <a href="agente-baria.html" class="cta-button">Ir al Agente →</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero -->
+        <section class="hero" id="inicio">
+            <h1>Costeá tu trago en 10 segundos</h1>
+            <p>Foto o texto. BarIA te devuelve rendimiento de botella, pour cost, margen sugerido y normativa de tu provincia — todo con IA, sin backend, sin instalación.</p>
+            <div class="hero-cta">
+                <a href="agente-baria.html" class="cta-button">Analizar mi primer trago gratis →</a>
+                <a href="#features" class="cta-button cta-button-secondary">Ver características</a>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="features" id="features">
+            <h2>Todo lo que un bar necesita, en un chat</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📸</div>
+                    <h3>Costeo por foto o texto</h3>
+                    <p>Subí una foto de tu receta o escribí los ingredientes. BarIA extrae las cantidades y calcula el costo al instante.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🍾</div>
+                    <h3>Rendimiento de botella</h3>
+                    <p>¿Cuántos tragos salen de una botella de 750ml a 50ml por trago? Pour cost automático en segundos.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Margen y precio sugerido</h3>
+                    <p>Define tu margen objetivo y BarIA te propone el precio de venta. Alerta si el margen es bajo.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚖️</div>
+                    <h3>Normativa por provincia</h3>
+                    <p>Horarios de expendio, habilitaciones, bromatología, requerimientos UTHGRA — consultá por provincia al instante.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Cálculo de sueldos UTHGRA</h3>
+                    <p>Categorías, aumentos vigentes, contribuciones — el agente te ayuda con nómina y paritarias.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Exporta a Google Sheets</h3>
+                    <p>Tus tragos costeados, márgenes y consultas se guardan en tu propia hoja de cálculo, bajo tu control.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing -->
+        <section class="pricing" id="pricing">
+            <h2>Planes transparentes</h2>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Prueba gratis</h3>
+                    <p class="pricing-description">5 días · Sin tarjeta</p>
+                    <div class="pricing-amount">Gratis</div>
+                    <p class="pricing-description">Solo pagás tu consumo de API (~USD 0.002/consulta)</p>
+                    <ul class="pricing-features">
+                        <li>Chat IA para costeo</li>
+                        <li>Foto/texto de recetas</li>
+                        <li>Rendimiento de botella</li>
+                        <li>Consultas normativas</li>
+                        <li>Cálculo de sueldos</li>
+                        <li>Exportar a Sheets</li>
+                    </ul>
+                    <a href="agente-baria.html" class="cta-button">Probar 5 días gratis</a>
+                </div>
+                <div class="pricing-card featured">
+                    <h3>Bar / Restaurante</h3>
+                    <p class="pricing-description">Sin límite de tiempo</p>
+                    <div class="pricing-amount">USD <small>80/mes</small></div>
+                    <p class="pricing-description">TODO lo de la prueba + onboarding y soporte</p>
+                    <ul class="pricing-features">
+                        <li>TODO lo de la prueba gratis</li>
+                        <li>Onboarding 1 a 1</li>
+                        <li>Soporte directo por WhatsApp</li>
+                        <li>Avisos de cambios normativos</li>
+                        <li>Help con Google Sheets</li>
+                        <li>Prioridad para nuevas features</li>
+                    </ul>
+                    <a href="#contacto" class="cta-button">Contratar Plan →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section class="faq" id="faq">
+            <h2>Preguntas frecuentes</h2>
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    ¿Qué es una API key y cuánto cuesta?
+                    <span>+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Es una clave personal para usar la IA de Anthropic. Creás cuenta gratis en console.anthropic.com, cargás crédito y generás tu key. Costo: ~USD 0.002 por consulta — USD 5 te dan unas 2.500 consultas.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    ¿Mis datos y recetas son privados?
+                    <span>+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Sí. BarIA no tiene backend propio. Tu API key y los archivos van directo de tu navegador a Anthropic. Al cerrar la pestaña, todo se borra. Con el Plan Bar además te avisamos proactivamente de cambios normativos.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    ¿Reemplaza al POS o al contador?
+                    <span>+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>No. Es una herramienta de apoyo para dueños y encargados de bar. Acelera el costeo de tragos y consultas normativas, pero no toca facturación ni nómina formal. El POS sigue siendo tu caja, tu contador sigue siendo tu firma.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    ¿Funciona en el celular?
+                    <span>+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Sí, completamente responsive. Funciona perfecto en smartphone y tablet sin instalar ninguna app. Ideal para consultar costeos en la barra.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    ¿Qué pasa si mi conexión cae?
+                    <span>+</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Necesitás conexión a internet activa porque BarIA consulta la IA en tiempo real. Pero como no hay backend propio, no hay riesgo de "servidor caído" — si tu internet funciona, BarIA funciona.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="final-cta" id="contacto">
+            <h3>Probalo gratis 5 días</h3>
+            <p>Ingresá con Google, pegá tu API key y listo. Sin tarjeta, sin contraseñas.</p>
+            <div class="hero-cta">
+                <a href="agente-baria.html" class="cta-button">Abrir BarIA →</a>
+                <a href="https://wa.me/5493425387578?text=Hola,%20quiero%20info%20sobre%20BarIA" class="cta-button cta-button-secondary">Consultar por WhatsApp</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p><strong>BarIA</strong> — Asistente de costeo y normativa para bares y restaurantes. Tus datos siempre bajo tu control — hecho por LABStudio.pna.</p>
+        <p style="margin-top: 1rem;">© 2026 BarIA · Todos los derechos reservados · Desarrollado por <a href="https://labstudiopna.github.io" style="color: var(--brand-2); text-decoration: none;">LABStudio.pna</a></p>
+    </footer>
+
+    <script>
+        function toggleFaq(button) {
+            const answer = button.nextElementSibling;
+            button.classList.toggle('active');
+            answer.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

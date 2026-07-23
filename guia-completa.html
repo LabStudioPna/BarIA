@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Guía completa de uso — BarIA">
+    <meta name="theme-color" content="#0A0C12">
+    <link rel="icon" type="image/svg+xml" href="icon-transparent.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
+    <title>Guía Completa | BarIA</title>
+    <style>
+        :root {
+            --bg: #0A0C12;
+            --fg: #E8E9EB;
+            --fg-muted: #9CA3AF;
+            --brand: #E5348B;
+            --brand-2: #22D3EE;
+            --border: #1F2937;
+            --surface: #111827;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--bg);
+            color: var(--fg);
+            line-height: 1.8;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 12, 18, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--fg);
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+        }
+
+        nav a {
+            color: var(--fg-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--brand);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        aside {
+            position: sticky;
+            top: 80px;
+            height: fit-content;
+        }
+
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+
+        .toc h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--brand);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .toc ul {
+            list-style: none;
+        }
+
+        .toc li {
+            margin-bottom: 0.75rem;
+        }
+
+        .toc a {
+            color: var(--fg-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .toc a:hover,
+        .toc a.active {
+            color: var(--brand);
+        }
+
+        main {
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--fg-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--brand);
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        h2:first-of-type {
+            border-top: none;
+            margin-top: 0;
+            padding-top: 0;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--brand-2);
+        }
+
+        p {
+            margin-bottom: 1rem;
+            color: var(--fg-muted);
+        }
+
+        ul, ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        code {
+            background: rgba(34, 211, 238, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--brand-2);
+        }
+
+        .highlight {
+            background: rgba(229, 52, 139, 0.1);
+            padding: 1.5rem;
+            border-left: 3px solid var(--brand);
+            border-radius: 4px;
+            margin: 1.5rem 0;
+        }
+
+        .highlight.info {
+            background: rgba(34, 211, 238, 0.1);
+            border-left-color: var(--brand-2);
+        }
+
+        .step {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: var(--brand);
+            color: white;
+            text-align: center;
+            line-height: 32px;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 1rem;
+        }
+
+        .step h4 {
+            display: inline-block;
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table th {
+            background: var(--surface);
+            font-weight: 600;
+            color: var(--brand);
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(229, 52, 139, 0.05);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            aside {
+                position: static;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <img src="icon-transparent.svg" alt="BarIA" class="logo-icon">
+                BarIA
+            </a>
+            <nav>
+                <a href="index.html">← Volver a landing</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside>
+            <div class="toc">
+                <h3>Contenido</h3>
+                <ul>
+                    <li><a href="#intro">Introducción</a></li>
+                    <li><a href="#empezar">Empezar</a></li>
+                    <li><a href="#costeo">Costeo de tragos</a></li>
+                    <li><a href="#normativa">Normativa provincial</a></li>
+                    <li><a href="#uthgra">Cálculo UTHGRA</a></li>
+                    <li><a href="#sheets">Google Sheets</a></li>
+                    <li><a href="#faq">Preguntas frecuentes</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main>
+            <h1>Guía Completa de BarIA</h1>
+            <p class="subtitle">Todo lo que necesitás saber para empezar a usar BarIA en tu bar o restaurante</p>
+
+            <h2 id="intro">1. Introducción</h2>
+            <p>BarIA es un asistente inteligente para costear bebidas, consultar normativa y calcular sueldos UTHGRA. Funciona 100% en tu navegador — tus datos nunca pasan por nuestros servidores.</p>
+            <p>Necesitás:</p>
+            <ul>
+                <li>Una API key de Anthropic (gratis desde <code>console.anthropic.com</code>)</li>
+                <li>Conexión a internet</li>
+                <li>Un navegador moderno (Chrome, Firefox, Safari, Edge)</li>
+            </ul>
+
+            <h2 id="empezar">2. Primeros pasos</h2>
+            <div class="step">
+                <span class="step-number">1</span>
+                <h4>Obtené tu API key</h4>
+                <p>Andá a <a href="https://console.anthropic.com">console.anthropic.com</a>, creá cuenta (es gratis), generá una API key. Te la vas a copiar en un segundo.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">2</span>
+                <h4>Ingresá a BarIA</h4>
+                <p>Hacé click en "Ir al Agente" desde la landing. Te va a pedir que ingreses con Google.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">3</span>
+                <h4>Pegá tu API key</h4>
+                <p>En el segundo paso del agente, pegá tu API key. Solo se guarda en tu navegador, nunca en nuestros servidores.</p>
+            </div>
+
+            <div class="step">
+                <span class="step-number">4</span>
+                <h4>¡Listo!</h4>
+                <p>Ya podés empezar a costeár tragos, consultar normativa, lo que necesites.</p>
+            </div>
+
+            <h2 id="costeo">3. Costeo de tragos</h2>
+            <p>La feature estrella de BarIA. Tres maneras de hacerlo:</p>
+
+            <h3>Opción A: Foto de la receta</h3>
+            <p>Sacá una foto de tu ficta técnica (o de la receta escrita en papel) y subila. BarIA la lee automáticamente y extrae ingredientes, cantidades, marcas.</p>
+
+            <h3>Opción B: Texto directo</h3>
+            <p>Escribí la receta en el chat. Ejemplo: "Fernet 50ml, Coca 200ml, hielo, limón". BarIA la entiende y calcula el costo.</p>
+
+            <h3>Opción C: Excel o planilla</h3>
+            <p>Si tenés tus recetas en una planilla Excel, podés subirlas también. BarIA las procesa automáticamente.</p>
+
+            <div class="highlight info">
+                <strong>💡 Tip:</strong> Guardá los precios de tus proveedores al día. BarIA usa los que vos le indiques para hacer el cálculo — si están desactualizados, el costo va a estar mal.
+            </div>
+
+            <h3>Qué te devuelve BarIA:</h3>
+            <ul>
+                <li><strong>Costo por trago:</strong> cuánto te sale ese trago a vos (suma de ingredientes)</li>
+                <li><strong>Pour cost %:</strong> qué porcentaje del precio de venta es el costo (ideal: 18-24%)</li>
+                <li><strong>Rendimiento de botella:</strong> cuántos tragos salen de una botella de 750ml</li>
+                <li><strong>Precio sugerido:</strong> según tu margen objetivo, cuánto deberías cobrar</li>
+                <li><strong>Alerta de margen:</strong> si es muy bajo, te lo advierte</li>
+            </ul>
+
+            <h2 id="normativa">4. Normativa provincial</h2>
+            <p>Cada provincia tiene reglas diferentes sobre horarios, habilitaciones, expendio de alcohol. Preguntale a BarIA.</p>
+
+            <h3>Qué podés consultar:</h3>
+            <ul>
+                <li>Horario de expendio de alcohol (cuándo podés vender hasta)</li>
+                <li>Horario de cierre del local (bailables vs bares)</li>
+                <li>Requisitos de habilitación municipal</li>
+                <li>Carnet de manipulador de alimentos / libreta sanitaria</li>
+                <li>Inscripción en registro de bebidas alcohólicas</li>
+                <li>Aforo máximo por m²</li>
+            </ul>
+
+            <div class="highlight">
+                <strong>⚠️ Importante:</strong> BarIA te da información orientativa. Siempre confirmá con el municipio o las autoridades locales. Los horarios y requisitos cambian frecuentemente.
+            </div>
+
+            <h2 id="uthgra">5. Cálculo de sueldos UTHGRA</h2>
+            <p>UTHGRA es el sindicato de trabajadores gastronómicos. Tiene categorías, aumentos escalonados y pautas específicas.</p>
+
+            <h3>Qué incluye:</h3>
+            <ul>
+                <li>Categorías 1 a 6 (personal de base, jefes, etc.)</li>
+                <li>Salario básico vigente (se actualiza cada mes)</li>
+                <li>Adicionales convencionales (antigüedad, presentación, etc.)</li>
+                <li>Contribuciones (solidaria para no afiliados, afiliación)</li>
+                <li>Descuentos (aportes)</li>
+            </ul>
+
+            <div class="highlight info">
+                <strong>ℹ️:</strong> Consultá a BarIA: "¿Cuánto debo pagar a un mozo categoría 3 en octubre 2025?" y te da el cálculo exacto con todos los adicionales.
+            </div>
+
+            <h2 id="sheets">6. Google Sheets (Plan Bar)</h2>
+            <p>Si contratás el Plan Bar, podés conectar tu Google Sheets para que tus costeos, márgenes y consultas se guarden automáticamente.</p>
+
+            <h3>Cómo funciona:</h3>
+            <ol>
+                <li>Habilitás el acceso desde BarIA</li>
+                <li>Se crea una hoja nueva en tu Google Drive</li>
+                <li>Cada vez que costeás un trago, se guarda automáticamente</li>
+                <li>Vos podés trabajar la hoja — agregar fórmulas, gráficos, lo que necesites</li>
+                <li>Opcionalmente, recibes un resumen semanal y un reporte mensual por email</li>
+            </ol>
+
+            <h2 id="faq">7. Preguntas frecuentes</h2>
+
+            <h3>¿Cuánto cuesta Anthropic?</h3>
+            <p>Roughly ~USD 0.002 por consulta. USD 5 en crédito te da unas 2.500 consultas. Vos pagás directamente a Anthropic, no a nosotros.</p>
+
+            <h3>¿Puedo usar BarIA desde el celular?</h3>
+            <p>Sí, es completamente responsive. Funciona perfecto en celular y tablet.</p>
+
+            <h3>¿Qué pasa si me queda sin crédito en Anthropic?</h3>
+            <p>BarIA deja de funcionar hasta que recargues crédito en tu cuenta de Anthropic. Simple así.</p>
+
+            <h3>¿Puedo cambiar de navegador?</h3>
+            <p>Sí, pero tenés que ingresar de nuevo con Google y pegar tu API key de nuevo (no se comparte entre navegadores). Con el Plan Bar, todo se guarda en tu Google Sheets de todas formas.</p>
+
+            <h3>¿Y si tengo problemas técnicos?</h3>
+            <p>Escribinos por <a href="https://wa.me/5493425387578">WhatsApp</a> o <a href="mailto:labstudio.pna@gmail.com">email</a>. El Plan Bar incluye soporte directo.</p>
+
+            <p style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--fg-muted);">
+                Última actualización: Julio 2026 · BarIA por <a href="https://labstudiopna.github.io" style="color: var(--brand-2);">LABStudio.pna</a>
+            </p>
+        </main>
+    </div>
+</body>
+</html>
