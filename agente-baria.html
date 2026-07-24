@@ -246,37 +246,104 @@ table.data tr:hover td{background:var(--bg-alt)}
   <!-- TRAGOS (placeholder — se completa en el próximo paso) -->
   <section class="panel" id="panel-tragos">
     <h2>🍸 Costeo de tragos</h2>
-    <p class="sub">Pour cost, rendimiento de botella y margen sugerido a partir de una receta.</p>
+    <p class="sub">Escribí la receta (ingrediente, cantidad y costo del insumo). La IA calcula costo total, pour cost y rendimiento de botella.</p>
     <div class="card">
-      <p class="empty">🛠️ Panel dedicado en construcción — por ahora usá el Chat, funciona igual.</p>
+      <div class="field">
+        <label for="tgReceta">Receta y precios de insumos</label>
+        <textarea id="tgReceta" rows="3" placeholder="Ej: Fernet 50ml (botella 750ml cuesta $9.000), Coca 200ml (botella 1.5L cuesta $1.800), hielo, limón"></textarea>
+      </div>
+      <div class="grid-form">
+        <div class="field"><label for="tgPrecioVenta">Precio de venta ($)</label><input id="tgPrecioVenta" type="number" placeholder="4500"></div>
+        <div class="field"><label for="tgMargen">Pour cost objetivo (%)</label><input id="tgMargen" type="number" placeholder="20" value="20"></div>
+      </div>
+      <button class="btn btn-brand" id="tgCalcularBtn">Costear trago</button>
+      <div id="tgResult"></div>
     </div>
+    <div class="card">
+      <h3 style="margin-bottom:10px;">Tragos guardados</h3>
+      <div id="tgTablaWrap"><p class="empty">Todavía no guardaste ningún trago costeado.</p></div>
+    </div>
+    <p class="disclaimer">⚠️ El costeo es una estimación de IA a partir de los precios que vos indiques — siempre verificá contra tu proveedor. Pour cost ideal de referencia: 15% destilados, 20% cerveza tirada, 25% cerveza en botella, 30-40% vino.</p>
   </section>
 
-  <!-- PLATOS (placeholder) -->
+  <!-- PLATOS -->
   <section class="panel" id="panel-platos">
     <h2>🍽️ Costeo de platos</h2>
-    <p class="sub">Food cost por porción a partir de tu ficha técnica.</p>
+    <p class="sub">Escribí la ficha técnica (insumo, gramaje y costo). La IA calcula el costo por porción y el food cost %.</p>
     <div class="card">
-      <p class="empty">🛠️ Panel dedicado en construcción — por ahora usá el Chat, funciona igual.</p>
+      <div class="field">
+        <label for="ptFicha">Ficha técnica y precios de insumos</label>
+        <textarea id="ptFicha" rows="3" placeholder="Ej: Milanesa napolitana: 200g nalga ($4.200/kg), 100g queso ($6.500/kg), 80g jamón ($8.000/kg), guarnición papas 150g ($900/kg)"></textarea>
+      </div>
+      <div class="grid-form">
+        <div class="field"><label for="ptPrecioVenta">Precio de venta ($)</label><input id="ptPrecioVenta" type="number" placeholder="9500"></div>
+        <div class="field"><label for="ptMargen">Food cost objetivo (%)</label><input id="ptMargen" type="number" placeholder="30" value="30"></div>
+      </div>
+      <button class="btn btn-brand" id="ptCalcularBtn">Costear plato</button>
+      <div id="ptResult"></div>
     </div>
+    <div class="card">
+      <h3 style="margin-bottom:10px;">Platos guardados</h3>
+      <div id="ptTablaWrap"><p class="empty">Todavía no guardaste ningún plato costeado.</p></div>
+    </div>
+    <p class="disclaimer">⚠️ El costeo es una estimación de IA a partir de los precios que vos indiques. Food cost ideal de referencia (FEHGRA): 28-33%.</p>
   </section>
 
-  <!-- NORMATIVA (placeholder) -->
+  <!-- NORMATIVA -->
   <section class="panel" id="panel-normativa">
     <h2>⚖️ Normativa por provincia</h2>
-    <p class="sub">Horarios de expendio, habilitaciones y bromatología.</p>
+    <p class="sub">Elegí tu jurisdicción y consultá horarios de expendio, habilitaciones y bromatología.</p>
     <div class="card">
-      <p class="empty">🛠️ Panel dedicado en construcción — preguntale al Chat por tu provincia.</p>
+      <div class="grid-form">
+        <div class="field">
+          <label for="nmJurisdiccion">Jurisdicción</label>
+          <select id="nmJurisdiccion">
+            <option value="CABA">CABA</option>
+            <option value="Provincia de Buenos Aires">Provincia de Buenos Aires</option>
+            <option value="Rosario, Santa Fe">Rosario, Santa Fe</option>
+            <option value="Ciudad de Santa Fe">Ciudad de Santa Fe</option>
+            <option value="Córdoba">Córdoba</option>
+            <option value="Mendoza">Mendoza</option>
+            <option value="Otra provincia">Otra provincia (especificar en la consulta)</option>
+          </select>
+        </div>
+        <div class="field"><label for="nmPregunta">Consulta específica (opcional)</label><input id="nmPregunta" type="text" placeholder="Ej: ¿hasta qué hora puedo vender alcohol un viernes?"></div>
+      </div>
+      <button class="btn btn-brand" id="nmConsultarBtn">Consultar normativa</button>
+      <div id="nmResult"></div>
     </div>
+    <p class="disclaimer">⚠️ Información orientativa, con base en normativa relevada — puede haber cambiado. Confirmá siempre con el municipio o autoridad local antes de decidir algo que dependa de esto.</p>
   </section>
 
-  <!-- UTHGRA (placeholder) -->
+  <!-- UTHGRA -->
   <section class="panel" id="panel-uthgra">
     <h2>👥 Sueldos UTHGRA</h2>
-    <p class="sub">Categorías, básicos vigentes y adicionales convencionales.</p>
+    <p class="sub">Elegí categoría y mes, y te devuelve básico y adicionales de referencia.</p>
     <div class="card">
-      <p class="empty">🛠️ Panel dedicado en construcción — preguntale al Chat la categoría y el mes.</p>
+      <div class="grid-form">
+        <div class="field">
+          <label for="uthCategoria">Categoría</label>
+          <select id="uthCategoria">
+            <option value="1">Categoría 1</option>
+            <option value="2">Categoría 2</option>
+            <option value="3" selected>Categoría 3</option>
+            <option value="4">Categoría 4</option>
+            <option value="5">Categoría 5</option>
+            <option value="6">Categoría 6</option>
+          </select>
+        </div>
+        <div class="field"><label for="uthMes">Mes y año</label><input id="uthMes" type="month"></div>
+        <div class="field"><label for="uthAfiliado">Afiliación sindical</label>
+          <select id="uthAfiliado">
+            <option value="afiliado">Afiliado</option>
+            <option value="no afiliado (contribución solidaria 2%)">No afiliado (contribución solidaria 2%)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-brand" id="uthCalcularBtn">Calcular sueldo</button>
+      <div id="uthResult"></div>
     </div>
+    <p class="disclaimer">⚠️ Las paritarias UTHGRA se actualizan con frecuencia (CCT 389/04 FEHGRA y 401/05). Confirmá el monto exacto con la fuente oficial o tu contador antes de liquidar sueldos.</p>
   </section>
 
   <!-- VENCIMIENTOS (placeholder) -->
@@ -286,14 +353,26 @@ table.data tr:hover td{background:var(--bg-alt)}
     <div class="card"><p class="empty">⏳ Próximamente.</p></div>
   </section>
 
-  <!-- PROVEEDORES (placeholder) -->
+  <!-- PROVEEDORES -->
   <section class="panel" id="panel-proveedores">
     <h2>🧾 Comparador de proveedores</h2>
     <p class="sub">Cargá precios por insumo y compará — el mejor precio se marca solo.</p>
-    <div class="card"><p class="empty">⏳ Próximamente.</p></div>
+    <div class="card">
+      <div class="grid-form">
+        <div class="field"><label for="prInsumo">Insumo</label><input id="prInsumo" type="text" placeholder="Ej: Fernet Branca 750ml"></div>
+        <div class="field"><label for="prProveedor">Proveedor</label><input id="prProveedor" type="text" placeholder="Ej: Distribuidora Centro"></div>
+        <div class="field"><label for="prPrecio">Precio ($)</label><input id="prPrecio" type="number" placeholder="9000"></div>
+        <div class="field"><label for="prUnidad">Unidad</label><input id="prUnidad" type="text" placeholder="Ej: botella 750ml"></div>
+      </div>
+      <button class="btn btn-brand" id="prAgregarBtn">+ Agregar</button>
+    </div>
+    <div class="card">
+      <div id="prTablaWrap"><p class="empty">Sin precios cargados todavía. Cargá el mismo insumo de 2+ proveedores para comparar.</p></div>
+    </div>
   </section>
 
   <!-- MERMAS (placeholder, fase 2) -->
+
   <section class="panel" id="panel-mermas">
     <h2>📉 Control de mermas</h2>
     <p class="sub">Stock teórico vs. real de barra y cocina.</p>
@@ -689,6 +768,202 @@ async function registrarFilaSheets(claveHoja, fila){
     console.warn('Registro a Google Sheets falló silenciosamente:', e);
   }
 }
+
+/* ---------- Helpers comunes a los paneles nuevos ---------- */
+function parseJson(text){
+  const m = text.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error('Sin JSON en la respuesta');
+  return JSON.parse(m[0]);
+}
+function loadList(key){
+  try{ return JSON.parse(localStorage.getItem(key) || '[]'); }catch(e){ return []; }
+}
+function saveList(key, list){ localStorage.setItem(key, JSON.stringify(list)); }
+
+/* ---------- Costeo de tragos ---------- */
+const SYS_TRAGOS = `Sos un calculador de costeo de tragos para bares argentinos. A partir de la receta y precios de insumos que te pasan, y opcionalmente un precio de venta y un pour cost objetivo, respondé SOLO con un JSON (sin texto extra, sin markdown) con esta forma exacta:
+{"costo_total": number, "pour_cost_pct": number|null, "rendimiento_botella": string|null, "precio_sugerido": number|null, "alerta": string, "resumen": string}
+Donde: costo_total es la suma de insumos usados en $ARS; pour_cost_pct es costo_total/precio_venta*100 si dieron precio_venta, si no null; rendimiento_botella es un texto breve tipo "15 tragos por botella de 750ml" si se puede inferir, si no null; precio_sugerido es costo_total/(pourCostObjetivo/100) si dieron margen objetivo, si no null; alerta es un texto corto de 1 frase (ej: "Margen sano" o "Pour cost alto, subí el precio o achicá la medida"); resumen es 1-2 frases explicando el cálculo. No inventes precios de insumos que no te dieron — si falta un precio, ponelo en el resumen como advertencia y omitilo del cálculo.`;
+
+function renderTragos(){
+  const list = loadList('baria_tragos_list');
+  const wrap = $('tgTablaWrap');
+  if (!list.length){ wrap.innerHTML = '<p class="empty">Todavía no guardaste ningún trago costeado.</p>'; return; }
+  let html = '<table class="data"><tr><th>Receta</th><th>Costo</th><th>Pour cost</th><th>Precio venta</th><th></th></tr>';
+  list.forEach((r, i) => {
+    html += `<tr><td>${r.receta}</td><td>${fmt(r.costo)}</td><td>${r.pourCost ?? '—'}%</td><td>${r.precioVenta ? fmt(r.precioVenta) : '—'}</td><td><button class="del" onclick="delTrago(${i})">✕</button></td></tr>`;
+  });
+  wrap.innerHTML = html + '</table>';
+}
+function delTrago(i){ const list = loadList('baria_tragos_list'); list.splice(i,1); saveList('baria_tragos_list', list); renderTragos(); }
+
+$('tgCalcularBtn').addEventListener('click', async () => {
+  const receta = $('tgReceta').value.trim();
+  if (!receta){ alert('Escribí la receta primero.'); return; }
+  const precioVenta = $('tgPrecioVenta').value;
+  const margen = $('tgMargen').value;
+  const btn = $('tgCalcularBtn');
+  btn.disabled = true; btn.textContent = 'Calculando...';
+  $('tgResult').innerHTML = '<p class="loading" style="margin-top:12px;"><span></span><span></span><span></span></p>';
+  try{
+    const userMsg = `Receta: ${receta}\n${precioVenta ? 'Precio de venta: $'+precioVenta : ''}\n${margen ? 'Pour cost objetivo: '+margen+'%' : ''}`;
+    const reply = await callClaude([{ role:'user', content: userMsg }], SYS_TRAGOS, 600);
+    const data = parseJson(reply);
+    $('tgResult').innerHTML = `
+      <div class="result-box">
+        <div class="big">${fmt(data.costo_total)}</div>
+        <div class="row-mini"><span>Pour cost</span><span>${data.pour_cost_pct != null ? data.pour_cost_pct.toFixed(1)+'%' : '—'}</span></div>
+        <div class="row-mini"><span>Rendimiento</span><span>${data.rendimiento_botella ?? '—'}</span></div>
+        <div class="row-mini"><span>Precio sugerido</span><span>${data.precio_sugerido != null ? fmt(data.precio_sugerido) : '—'}</span></div>
+        <p style="margin-top:10px;font-size:13px;"><strong>${data.alerta}</strong></p>
+        <p style="margin-top:6px;font-size:13px;color:var(--muted);">${data.resumen}</p>
+        <button class="btn btn-ghost" style="margin-top:12px;" id="tgGuardarBtn">💾 Guardar</button>
+      </div>`;
+    $('tgGuardarBtn').addEventListener('click', () => {
+      const list = loadList('baria_tragos_list');
+      const row = { receta: receta.slice(0,60), costo: data.costo_total, pourCost: data.pour_cost_pct != null ? data.pour_cost_pct.toFixed(1) : null, precioVenta: precioVenta || null, fecha: new Date().toISOString().slice(0,10) };
+      list.unshift(row);
+      saveList('baria_tragos_list', list);
+      renderTragos();
+      registrarFilaSheets('tragos', [row.fecha, row.receta, row.costo, row.pourCost ?? '', '', row.precioVenta ?? '']);
+    });
+  }catch(e){
+    $('tgResult').innerHTML = `<p class="result-box" style="color:var(--bad);">${errMsg(e)}</p>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Costear trago';
+  }
+});
+renderTragos();
+
+/* ---------- Costeo de platos ---------- */
+const SYS_PLATOS = `Sos un calculador de food cost para restaurantes argentinos. A partir de la ficha técnica y precios de insumos que te pasan, y opcionalmente un precio de venta y un food cost objetivo, respondé SOLO con un JSON (sin texto extra, sin markdown) con esta forma exacta:
+{"costo_porcion": number, "food_cost_pct": number|null, "precio_sugerido": number|null, "alerta": string, "resumen": string}
+Donde: costo_porcion es el costo total de la porción en $ARS; food_cost_pct es costo_porcion/precio_venta*100 si dieron precio_venta, si no null; precio_sugerido es costo_porcion/(foodCostObjetivo/100) si dieron margen objetivo, si no null; alerta es 1 frase corta comparando contra el ideal de 28-33% (ej: "Dentro del ideal" o "Food cost alto, ajustá porción o precio"); resumen es 1-2 frases explicando el cálculo. No inventes precios de insumos que no te dieron.`;
+
+function renderPlatos(){
+  const list = loadList('baria_platos_list');
+  const wrap = $('ptTablaWrap');
+  if (!list.length){ wrap.innerHTML = '<p class="empty">Todavía no guardaste ningún plato costeado.</p>'; return; }
+  let html = '<table class="data"><tr><th>Plato</th><th>Costo porción</th><th>Food cost</th><th>Precio venta</th><th></th></tr>';
+  list.forEach((r, i) => {
+    html += `<tr><td>${r.plato}</td><td>${fmt(r.costo)}</td><td>${r.foodCost ?? '—'}%</td><td>${r.precioVenta ? fmt(r.precioVenta) : '—'}</td><td><button class="del" onclick="delPlato(${i})">✕</button></td></tr>`;
+  });
+  wrap.innerHTML = html + '</table>';
+}
+function delPlato(i){ const list = loadList('baria_platos_list'); list.splice(i,1); saveList('baria_platos_list', list); renderPlatos(); }
+
+$('ptCalcularBtn').addEventListener('click', async () => {
+  const ficha = $('ptFicha').value.trim();
+  if (!ficha){ alert('Escribí la ficha técnica primero.'); return; }
+  const precioVenta = $('ptPrecioVenta').value;
+  const margen = $('ptMargen').value;
+  const btn = $('ptCalcularBtn');
+  btn.disabled = true; btn.textContent = 'Calculando...';
+  $('ptResult').innerHTML = '<p class="loading" style="margin-top:12px;"><span></span><span></span><span></span></p>';
+  try{
+    const userMsg = `Ficha técnica: ${ficha}\n${precioVenta ? 'Precio de venta: $'+precioVenta : ''}\n${margen ? 'Food cost objetivo: '+margen+'%' : ''}`;
+    const reply = await callClaude([{ role:'user', content: userMsg }], SYS_PLATOS, 600);
+    const data = parseJson(reply);
+    $('ptResult').innerHTML = `
+      <div class="result-box">
+        <div class="big">${fmt(data.costo_porcion)}</div>
+        <div class="row-mini"><span>Food cost</span><span>${data.food_cost_pct != null ? data.food_cost_pct.toFixed(1)+'%' : '—'}</span></div>
+        <div class="row-mini"><span>Precio sugerido</span><span>${data.precio_sugerido != null ? fmt(data.precio_sugerido) : '—'}</span></div>
+        <p style="margin-top:10px;font-size:13px;"><strong>${data.alerta}</strong></p>
+        <p style="margin-top:6px;font-size:13px;color:var(--muted);">${data.resumen}</p>
+        <button class="btn btn-ghost" style="margin-top:12px;" id="ptGuardarBtn">💾 Guardar</button>
+      </div>`;
+    $('ptGuardarBtn').addEventListener('click', () => {
+      const list = loadList('baria_platos_list');
+      const row = { plato: ficha.slice(0,60), costo: data.costo_porcion, foodCost: data.food_cost_pct != null ? data.food_cost_pct.toFixed(1) : null, precioVenta: precioVenta || null, fecha: new Date().toISOString().slice(0,10) };
+      list.unshift(row);
+      saveList('baria_platos_list', list);
+      renderPlatos();
+      registrarFilaSheets('platos', [row.fecha, row.plato, row.costo, row.foodCost ?? '', row.precioVenta ?? '']);
+    });
+  }catch(e){
+    $('ptResult').innerHTML = `<p class="result-box" style="color:var(--bad);">${errMsg(e)}</p>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Costear plato';
+  }
+});
+renderPlatos();
+
+/* ---------- Normativa ---------- */
+const SYS_NORMATIVA = `Sos un asistente de normativa gastronómica argentina (expendio de alcohol, habilitaciones, bromatología). Respondé de forma breve, organizada en viñetas, con la jurisdicción que te indiquen. Si no tenés el dato exacto para esa jurisdicción, decilo claramente y sugerí confirmar con el municipio. Terminá siempre con una línea "Confirmá con la autoridad local, la normativa cambia con frecuencia."`;
+
+$('nmConsultarBtn').addEventListener('click', async () => {
+  const jur = $('nmJurisdiccion').value;
+  const pregunta = $('nmPregunta').value.trim();
+  const btn = $('nmConsultarBtn');
+  btn.disabled = true; btn.textContent = 'Consultando...';
+  $('nmResult').innerHTML = '<p class="loading" style="margin-top:12px;"><span></span><span></span><span></span></p>';
+  try{
+    const userMsg = `Jurisdicción: ${jur}. ${pregunta ? 'Pregunta específica: '+pregunta : 'Dame un resumen de horarios de expendio de alcohol, habilitación municipal y libreta sanitaria/carnet de manipulador.'}`;
+    const reply = await callClaude([{ role:'user', content: userMsg }], SYS_NORMATIVA, 700);
+    $('nmResult').innerHTML = `<div class="result-box" style="white-space:pre-wrap;">${reply.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`;
+  }catch(e){
+    $('nmResult').innerHTML = `<p class="result-box" style="color:var(--bad);">${errMsg(e)}</p>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Consultar normativa';
+  }
+});
+
+/* ---------- Sueldos UTHGRA ---------- */
+const SYS_UTHGRA = `Sos un asistente de liquidación de sueldos UTHGRA (convenios CCT 389/04 FEHGRA y 401/05) para bares y restaurantes argentinos. Te dan categoría (1 a 6), mes/año y si está afiliado o no. Respondé de forma breve: básico de referencia más reciente que conozcas, adicionales convencionales típicos (antigüedad, presentismo si aplica), y si no está afiliado sumá la nota de contribución solidaria del 2%. Si no tenés el dato exacto actualizado para ese mes, decilo claramente y aclará que las paritarias cambian seguido — nunca inventes un número exacto sin avisar que es una referencia a confirmar.`;
+
+$('uthCalcularBtn').addEventListener('click', async () => {
+  const cat = $('uthCategoria').value;
+  const mes = $('uthMes').value || 'el mes más reciente que conozcas';
+  const afiliado = $('uthAfiliado').value;
+  const btn = $('uthCalcularBtn');
+  btn.disabled = true; btn.textContent = 'Calculando...';
+  $('uthResult').innerHTML = '<p class="loading" style="margin-top:12px;"><span></span><span></span><span></span></p>';
+  try{
+    const userMsg = `Categoría ${cat}, período ${mes}, ${afiliado}.`;
+    const reply = await callClaude([{ role:'user', content: userMsg }], SYS_UTHGRA, 600);
+    $('uthResult').innerHTML = `<div class="result-box" style="white-space:pre-wrap;">${reply.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</div>`;
+  }catch(e){
+    $('uthResult').innerHTML = `<p class="result-box" style="color:var(--bad);">${errMsg(e)}</p>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Calcular sueldo';
+  }
+});
+(function(){ const mi = $('uthMes'); if (mi && !mi.value) mi.value = new Date().toISOString().slice(0,7); })();
+
+/* ---------- Comparador de proveedores (determinístico, sin IA) ---------- */
+function renderProveedores(){
+  const list = loadList('baria_proveedores_list');
+  const wrap = $('prTablaWrap');
+  if (!list.length){ wrap.innerHTML = '<p class="empty">Sin precios cargados todavía. Cargá el mismo insumo de 2+ proveedores para comparar.</p>'; return; }
+  const porInsumo = {};
+  list.forEach(r => { (porInsumo[r.insumo.toLowerCase()] = porInsumo[r.insumo.toLowerCase()] || []).push(r); });
+  let html = '<table class="data"><tr><th>Insumo</th><th>Proveedor</th><th>Precio</th><th>Unidad</th><th></th></tr>';
+  list.forEach((r, i) => {
+    const mejor = Math.min(...porInsumo[r.insumo.toLowerCase()].map(x => Number(x.precio)));
+    const esMejor = Number(r.precio) === mejor && porInsumo[r.insumo.toLowerCase()].length > 1;
+    html += `<tr><td>${r.insumo}</td><td>${r.proveedor}</td><td class="${esMejor ? 'best' : ''}">${fmt(r.precio)}${esMejor ? ' ✓' : ''}</td><td>${r.unidad || '—'}</td><td><button class="del" onclick="delProveedor(${i})">✕</button></td></tr>`;
+  });
+  wrap.innerHTML = html + '</table>';
+}
+function delProveedor(i){ const list = loadList('baria_proveedores_list'); list.splice(i,1); saveList('baria_proveedores_list', list); renderProveedores(); }
+
+$('prAgregarBtn').addEventListener('click', () => {
+  const insumo = $('prInsumo').value.trim();
+  const proveedor = $('prProveedor').value.trim();
+  const precio = $('prPrecio').value;
+  const unidad = $('prUnidad').value.trim();
+  if (!insumo || !proveedor || !precio){ alert('Completá al menos insumo, proveedor y precio.'); return; }
+  const list = loadList('baria_proveedores_list');
+  const row = { insumo, proveedor, precio, unidad, fecha: new Date().toISOString().slice(0,10) };
+  list.unshift(row);
+  saveList('baria_proveedores_list', list);
+  renderProveedores();
+  registrarFilaSheets('proveedores', [row.fecha, row.insumo, row.proveedor, row.precio, row.unidad]);
+  $('prInsumo').value=''; $('prProveedor').value=''; $('prPrecio').value=''; $('prUnidad').value='';
+});
+renderProveedores();
+
 </script>
 </body>
 </html>
