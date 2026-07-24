@@ -1,482 +1,693 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BarIA — Agente de bar y restaurante</title>
 <meta name="description" content="Agente de bar y restaurante con IA: costea tragos y platos, consulta normativa provincial y calcula sueldos UTHGRA. Tus datos siempre en tu navegador.">
+<title>BarIA — Agente de Bar y Restaurante</title>
 <meta name="theme-color" content="#8B5CF6">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="shortcut icon" href="favicon.ico">
-<link rel="manifest" href="site.webmanifest">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0A0A14;--bg-2:#14111F;--bg-3:#1C1830;--bg-soft:#0E0C18;
-  --border:#2A2340;--border-soft:#1E1930;
-  --text:#F0EEF8;--mid:#A79FC0;--dim:#6B6285;
-  --brand:#8B5CF6;--brand-soft:#C4B5FD;--brand-2:#F5B841;--brand-2-soft:#FCD34D;
-  --ok:#10B981;--ok-soft:#34D399;--red:#F87171;
+  --brand:#8B5CF6;--brand-dark:#2B1E45;--brand-light:#A78BFA;
+  --accent:#F5B841;--accent-light:#FCD34D;
+  --bg:#FAF8FC;--bg-alt:#F1ECFB;--card:#FFFFFF;
+  --text:#1E1729;--muted:#6E6280;--border:#E5DFF5;
+  --ok:#3E7A45;--warn:#B0872E;--bad:#B04A3A;
+  --shadow:0 2px 6px rgba(43,30,69,.05),0 14px 34px rgba(43,30,69,.09);
   --serif:'Playfair Display',Georgia,serif;
-  --sans:'Inter',system-ui,-apple-system,sans-serif;
-  --mono:'IBM Plex Mono',monospace;
-  --radius:14px;
+  --sans:'Inter',system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#120E1C;--bg-alt:#1A1428;--card:#1E1830;
+  --text:#F0EEF8;--muted:#A79FC0;--border:#2E2545;
+  --shadow:0 2px 6px rgba(0,0,0,.25),0 14px 34px rgba(0,0,0,.4);
 }
 html{scroll-behavior:smooth}
-body{font-family:var(--sans);color:var(--text);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased;min-height:100vh}
-a{color:inherit}
-button{font-family:inherit;cursor:pointer}
-input,select,textarea{font-family:inherit}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);line-height:1.6;transition:background .25s,color .25s}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2}
+button{font-family:var(--sans)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px 80px}
 
-/* ============ PANTALLA DE LOGIN / API KEY ============ */
-#loginScreen{
-  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-  background:radial-gradient(ellipse at top,rgba(139,92,246,.12),transparent 60%),var(--bg);
-}
-.login-card{width:100%;max-width:420px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;padding:36px 32px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
-.login-logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:6px}
-.login-logo img{width:44px;height:44px;border-radius:11px}
-.login-logo .name{font-family:var(--serif);font-size:26px;font-weight:700;color:#fff}
-.login-logo .name em{font-style:italic;color:var(--brand-soft)}
-.login-sub{text-align:center;color:var(--mid);font-size:13.5px;margin-bottom:28px}
+header.top{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.topbar{max-width:1080px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-weight:600;font-size:20px;text-decoration:none;color:var(--text)}
+.brand img{width:32px;height:32px;border-radius:9px}
+.brand em{font-style:italic;color:var(--accent)}
+.topbar .right{margin-left:auto;display:flex;gap:9px;align-items:center}
+.icon-btn{background:var(--bg-alt);border:1px solid var(--border);border-radius:9px;width:36px;height:36px;cursor:pointer;font-size:15px}
+.top-link{font-size:13px;color:var(--muted);text-decoration:none}
+.top-link:hover{color:var(--text)}
 
-.login-step{display:none}
-.login-step.active{display:block}
-.step-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--brand-soft);margin-bottom:14px}
-.google-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:13px;background:#fff;color:#1f1f1f;border:none;border-radius:11px;font-weight:600;font-size:14.5px;margin-bottom:14px}
-.google-btn:hover{background:#f2f2f2}
-.skip-link{display:block;text-align:center;font-size:12.5px;color:var(--dim);text-decoration:underline;margin-top:4px}
+.tab-row{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0 4px}
+.tab-btn{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:9px 15px;font-size:13.5px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s}
+.tab-btn:hover{color:var(--text);border-color:var(--brand-light)}
+.tab-btn.active{background:var(--brand);border-color:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(139,92,246,.28)}
+.tab-btn .soon-tag{font-size:9px;opacity:.75;margin-left:4px}
 
-.field{margin-bottom:16px}
-.field label{display:block;font-size:12.5px;font-weight:600;color:var(--mid);margin-bottom:7px}
-.field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:12px 14px;font-size:14.5px;color:#fff}
-.field input:focus,.field select:focus{outline:none;border-color:var(--brand)}
-.field-hint{font-size:12px;color:var(--dim);margin-top:7px;line-height:1.5}
-.field-hint a{color:var(--brand-soft);text-decoration:none}
+.keybox{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px 18px;margin:18px 0 26px;display:flex;gap:12px;align-items:end;flex-wrap:wrap;box-shadow:var(--shadow)}
+.keybox .f{flex:1;min-width:220px}
+.keybox label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px}
+.keybox input,.keybox select{width:100%;padding:10px 12px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans)}
+.keybox .hint{font-size:11.5px;color:var(--muted);width:100%}
+.keybox .hint a{color:var(--accent)}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:11px;font-weight:600;font-size:14.5px;border:none;transition:all .2s;width:100%}
-.btn-primary{background:linear-gradient(135deg,var(--brand),#6D28D9);color:#fff;box-shadow:0 4px 20px rgba(139,92,246,.32)}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(139,92,246,.42)}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.panel{display:none}
+.panel.active{display:block}
+.panel h2{font-size:24px;margin-bottom:6px}
+.sub{font-size:14px;color:var(--muted);margin-bottom:18px;max-width:640px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;box-shadow:var(--shadow);margin-bottom:18px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border-radius:9px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14.5px;font-family:var(--sans)}
+.field textarea{resize:vertical;min-height:70px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--brand-light)}
+.grid-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:11px;font-weight:600;font-size:14px;cursor:pointer;border:none;transition:transform .15s,box-shadow .15s}
+.btn-brand{background:var(--brand);color:#fff;box-shadow:0 3px 8px rgba(139,92,246,.22),0 10px 24px rgba(139,92,246,.26)}
+.btn-brand:hover{transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--brand);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--brand-light)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
 
-.trial-note{margin-top:22px;padding-top:20px;border-top:1px solid var(--border-soft);font-size:12px;color:var(--dim);line-height:1.7;text-align:center}
-.trial-note b{color:var(--brand-2-soft)}
+.dropzone{border:2px dashed var(--border);border-radius:14px;padding:34px 16px;text-align:center;cursor:pointer;color:var(--muted);font-size:14px;transition:all .2s}
+.dropzone:hover{border-color:var(--brand-light);background:var(--bg-alt)}
+.dropzone.small{padding:18px 12px;font-size:13px}
 
-/* ============ PANTALLA DE PRUEBA VENCIDA ============ */
-#expiredScreen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px;background:var(--bg)}
-.expired-card{width:100%;max-width:440px;background:var(--bg-2);border:1px solid var(--border);border-radius:20px;padding:38px 32px;text-align:center}
-.expired-card img{width:52px;height:52px;border-radius:12px;margin-bottom:14px}
-.expired-card h2{font-family:var(--serif);font-size:22px;margin-bottom:10px}
-.expired-card p{color:var(--mid);font-size:14px;margin-bottom:22px;line-height:1.6}
-.unlock-row{display:flex;gap:8px;margin-top:18px}
-.unlock-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:#fff;font-size:13.5px}
-.unlock-row button{padding:11px 16px;background:var(--bg-3);border:1px solid var(--border);border-radius:10px;color:var(--brand-soft);font-weight:600;font-size:13px}
-.expired-links{margin-top:18px;font-size:12px;color:var(--dim)}
-.expired-links a{color:var(--brand-soft);text-decoration:none}
-
-/* ============ APP PRINCIPAL ============ */
-#app{display:none;min-height:100vh;grid-template-columns:260px 1fr}
-#app.active{display:grid}
-
-/* Sidebar */
-.sidebar{background:var(--bg-2);border-right:1px solid var(--border-soft);padding:20px 14px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
-.side-logo{display:flex;align-items:center;gap:9px;text-decoration:none;padding:6px 8px 18px}
-.side-logo img{width:30px;height:30px;border-radius:8px}
-.side-logo .name{font-family:var(--serif);font-size:17px;font-weight:700;color:#fff}
-.side-logo .name em{font-style:italic;color:var(--brand-soft)}
-.side-guide{font-size:11.5px;color:var(--dim);text-decoration:none;padding:0 8px 16px;display:block}
-.side-guide:hover{color:var(--brand-soft)}
-
-.tab-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;border-radius:10px;background:none;border:none;color:var(--mid);font-size:13.5px;font-weight:500;text-align:left;margin-bottom:2px;transition:all .15s}
-.tab-btn:hover{background:var(--bg-3);color:#fff}
-.tab-btn.active{background:color-mix(in srgb, var(--brand) 14%, transparent);color:var(--brand-soft);font-weight:600}
-.tab-btn .tab-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
-.tab-btn .soon{margin-left:auto;font-size:9px;color:var(--dim);background:var(--bg);padding:2px 6px;border-radius:999px}
-
-.sidebar-foot{margin-top:auto;padding-top:14px;border-top:1px solid var(--border-soft)}
-.trial-pill{font-size:11px;color:var(--brand-2-soft);background:color-mix(in srgb, var(--brand-2) 12%, transparent);padding:7px 10px;border-radius:9px;margin-bottom:8px;text-align:center}
-.logout-btn{width:100%;padding:8px;background:none;border:1px solid var(--border);border-radius:9px;color:var(--dim);font-size:12px}
-.logout-btn:hover{color:var(--red);border-color:var(--red)}
-
-/* Main area */
-.main{overflow-y:auto;height:100vh}
-.tab-panel{display:none;padding:28px 32px;max-width:920px;margin:0 auto}
-.tab-panel.active{display:block}
-.panel-head{margin-bottom:20px}
-.panel-head h2{font-family:var(--serif);font-size:22px;margin-bottom:6px}
-.panel-head p{color:var(--mid);font-size:13.5px}
+table.data{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:14px}
+table.data th{text-align:left;padding:9px 10px;border-bottom:2px solid var(--border);font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+table.data td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top}
+table.data tr:hover td{background:var(--bg-alt)}
+.del{background:none;border:none;color:var(--bad);cursor:pointer;font-size:14px}
+.empty{font-size:13.5px;color:var(--muted);padding:18px 6px;text-align:center}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px}
+.pill.ok{background:rgba(62,122,69,.14);color:var(--ok)}
+.pill.warn{background:rgba(176,135,46,.14);color:var(--warn)}
+.pill.info{background:rgba(139,92,246,.14);color:var(--brand)}
+.best{color:var(--ok);font-weight:700}
+.result-box{background:var(--bg-alt);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-top:14px;font-size:14px}
+.result-box .big{font-family:var(--serif);font-size:26px;font-weight:600;color:var(--brand)}
+.row-mini{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px dashed var(--border)}
+.row-mini:last-child{border-bottom:none}
+.disclaimer{font-size:12px;color:var(--muted);margin-top:16px;line-height:1.55}
+.loading{display:inline-flex;gap:4px;align-items:center}
+.loading span{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:bnc 1.2s ease-in-out infinite}
+.loading span:nth-child(2){animation-delay:.2s}.loading span:nth-child(3){animation-delay:.4s}
+@keyframes bnc{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-5px);opacity:1}}
 
 /* Chat */
-.chat-wrap{display:flex;flex-direction:column;height:calc(100vh - 56px)}
-.chat-topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border-soft);background:var(--bg-soft)}
-.chat-topbar h2{font-family:var(--serif);font-size:18px}
-.model-select{background:var(--bg-2);border:1px solid var(--border);border-radius:9px;padding:7px 10px;color:var(--mid);font-size:12.5px}
-.chat-messages{flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:14px;max-width:820px;margin:0 auto;width:100%}
-.msg{max-width:78%;padding:13px 16px;border-radius:16px;font-size:14.5px;line-height:1.6;white-space:pre-wrap}
-.msg.user{align-self:flex-end;background:var(--bg-3);border-bottom-right-radius:5px}
-.msg.bot{align-self:flex-start;background:color-mix(in srgb, var(--brand) 10%, var(--bg-2));border:1px solid color-mix(in srgb, var(--brand) 22%, transparent);border-bottom-left-radius:5px}
-.msg.bot.loading{color:var(--dim);font-style:italic}
-.chat-input-wrap{padding:16px 28px 22px;border-top:1px solid var(--border-soft);background:var(--bg-soft)}
-.chat-input-row{max-width:820px;margin:0 auto;display:flex;gap:10px;align-items:flex-end}
-.chat-input-row textarea{flex:1;background:var(--bg-2);border:1px solid var(--border);border-radius:14px;padding:12px 16px;color:#fff;font-size:14.5px;resize:none;min-height:48px;max-height:140px}
-.chat-input-row textarea:focus{outline:none;border-color:var(--brand)}
-.chat-send{background:linear-gradient(135deg,var(--brand),#6D28D9);color:#fff;border:none;border-radius:12px;padding:0 20px;height:48px;font-weight:600;font-size:14px}
-.chat-send:disabled{opacity:.5}
-.chat-attach{background:var(--bg-2);border:1px solid var(--border);border-radius:12px;width:48px;height:48px;color:var(--mid);font-size:18px}
+.chat-box{background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow);display:flex;flex-direction:column;height:560px}
+.chat-msgs{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:12px}
+.cmsg{max-width:82%;padding:12px 15px;border-radius:14px;font-size:14px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.cmsg.user{background:var(--bg-alt);align-self:flex-end;border-bottom-right-radius:5px}
+.cmsg.ai{background:var(--brand);color:#fff;align-self:flex-start;border-bottom-left-radius:5px}
+.cmsg.ai b{color:var(--accent-light)}
+.chat-input-row{border-top:1px solid var(--border);padding:12px;display:flex;gap:8px;align-items:end}
+.chat-input-row textarea{flex:1;padding:11px 13px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:var(--sans);resize:none;min-height:44px;max-height:120px}
+.attach-btn{background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;width:44px;height:44px;cursor:pointer;font-size:16px;flex-shrink:0}
+.attach-pill{font-size:12px;color:var(--muted);padding:0 12px 8px}
 
-/* Placeholder "próximamente" */
-.soon-box{background:var(--bg-2);border:1px dashed var(--border);border-radius:var(--radius);padding:40px;text-align:center;color:var(--dim)}
-.soon-box .icon{font-size:32px;margin-bottom:12px}
-.soon-box h3{color:var(--mid);font-family:var(--serif);font-size:18px;margin-bottom:6px}
-.soon-box p{font-size:13.5px;max-width:400px;margin:0 auto}
-
-@media(max-width:860px){
-  #app{grid-template-columns:1fr}
-  .sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;z-index:200;transform:translateX(-100%);transition:transform .25s}
-  .sidebar.open{transform:translateX(0)}
-  .main{width:100%}
+@media(max-width:640px){
+  .tab-btn{padding:8px 11px;font-size:12px}
+  .panel h2{font-size:20px}
+  .chat-box{height:70vh}
+  .cmsg{max-width:92%}
+  .card{padding:16px}
+  table.data{font-size:12px}
+  table.data td,table.data th{padding:7px 6px}
 }
+/* Login */
+.login-overlay{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:44px 36px;max-width:420px;width:100%;text-align:center}
+.login-card img{width:56px;height:56px;border-radius:14px;margin-bottom:16px;box-shadow:0 4px 12px rgba(43,30,69,.2)}
+.login-card h1{font-family:var(--serif);font-size:26px;margin-bottom:6px}
+.login-card h1 em{font-style:italic;color:var(--accent)}
+.login-card .sub{font-size:14px;color:var(--muted);margin-bottom:26px;line-height:1.6}
+#google-signin-btn{display:flex;justify-content:center;margin-bottom:14px;min-height:44px}
+#login-status{font-size:13px;color:var(--muted);min-height:18px}
+.login-note{font-size:12px;color:var(--muted);margin-top:18px;border-top:1px dashed var(--border);padding-top:14px;line-height:1.6}
+.user-chip{position:fixed;bottom:14px;right:14px;z-index:60;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12px;color:var(--muted);box-shadow:var(--shadow);display:none;align-items:center;gap:10px}
+.user-chip b{color:var(--text);font-weight:600}
+.user-chip button{background:none;border:none;color:var(--bad);cursor:pointer;font-size:12px;font-family:var(--sans)}
+.lab-pills{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px;text-align:left}
+.lab-pill{background:var(--bg-alt);border:1px solid var(--border);border-radius:9px;padding:8px 12px;font-size:12px;color:var(--muted)}
+.lab-paso{text-align:left;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.lab-key-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-family:monospace}
+.lab-enter-btn{width:100%;margin-top:18px;background:var(--brand);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:opacity .2s}
+.lab-enter-btn:disabled{opacity:.45;cursor:not-allowed}
 </style>
 </head>
 <body>
 
-<!-- ============ LOGIN ============ -->
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-logo">
-      <img src="favicon-192.png" alt="BarIA">
-      <div class="name">Bar<em>IA</em></div>
-    </div>
-    <p class="login-sub">Tu asistente de costeo y normativa</p>
-
-    <!-- Paso 1 -->
-    <div class="login-step active" id="step1">
-      <div class="step-label">Paso 1 — Identificate con Google</div>
-      <button class="google-btn" onclick="mockGoogleLogin()">
-        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.9c1.7-1.57 2.68-3.87 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 0 1 3.67 9c0-.59.1-1.17.28-1.7V4.97H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.03l2.99-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z"/></svg>
-        Continuar con Google
-      </button>
-      <a class="skip-link" onclick="skipGoogle()">Continuar sin Google (probar más rápido)</a>
-    </div>
-
-    <!-- Paso 2 -->
-    <div class="login-step" id="step2">
-      <div class="step-label">Paso 2 — Tu API key de Anthropic</div>
-      <div class="field">
-        <label for="apiKeyInput">API Key</label>
-        <input id="apiKeyInput" type="password" placeholder="sk-ant-...">
-        <div class="field-hint">Obtené tu key gratis en <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> →</div>
-      </div>
-      <div class="field">
-        <label for="modelSelectLogin">Modelo</label>
-        <select id="modelSelectLogin">
-          <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (rápido y económico)</option>
-          <option value="claude-sonnet-5">Claude Sonnet 5 (recetas complejas)</option>
-        </select>
-      </div>
-      <button class="btn btn-primary" onclick="enterApp()">Ingresar al agente →</button>
-    </div>
-
-    <div class="trial-note">
-      🎁 <b>5 días de prueba gratis</b> con acceso completo.<br>
-      🔒 <b>Tu privacidad:</b> la API key se guarda solo en tu navegador y se borra al cerrar la pestaña. Este sitio no tiene backend ni registra tus datos.
-    </div>
-  </div>
-</div>
-
-<!-- ============ PRUEBA VENCIDA ============ -->
-<div id="expiredScreen">
-  <div class="expired-card">
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card" id="loginCard">
     <img src="favicon-192.png" alt="BarIA">
-    <h2>Tu prueba terminó</h2>
-    <p>Los 5 días de prueba gratuita de BarIA llegaron a su fin. Para seguir usándolo con onboarding 1 a 1 y soporte por WhatsApp, pasate al Plan Bar/Restaurante.</p>
-    <a class="btn btn-primary" style="text-decoration:none" href="https://wa.me/5493425387578?text=Hola,%20se%20me%20venci%C3%B3%20la%20prueba%20de%20BarIA%20y%20quiero%20contratar%20el%20Plan%20Bar%2FRestaurante">Contratar por WhatsApp →</a>
-    <div class="unlock-row">
-      <input type="text" id="unlockCode" placeholder="¿Ya tenés tu código de acceso?">
-      <button onclick="tryUnlock()">Desbloquear</button>
+    <h1>Bar<em>IA</em></h1>
+    <p class="sub">Tu asistente de bar y restaurante con IA.<br>Costeá tragos y platos, y llevá el control de tu local.</p>
+    <div class="lab-pills">
+      <div class="lab-pill">🍸 Costeo de tragos</div>
+      <div class="lab-pill">🍽️ Costeo de platos</div>
+      <div class="lab-pill">⚖️ Normativa provincial</div>
+      <div class="lab-pill">👥 Sueldos UTHGRA</div>
     </div>
-    <div class="expired-links">¿Creés que es un error? Escribinos por el mismo WhatsApp y lo revisamos. — <a onclick="resetTrial()">Salir</a></div>
+    <p class="lab-paso">Paso 1 — Identificate con Google</p>
+    <div id="google-signin-btn"></div>
+    <p id="login-status"></p>
+    <p class="lab-paso">Paso 2 — Tu API key de Anthropic</p>
+    <input type="password" class="lab-key-input" id="labKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+    <p style="text-align:left;font-size:12px;color:var(--muted);margin-top:8px;">Obtené tu key gratis en <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent);">console.anthropic.com</a> →</p>
+    <button class="lab-enter-btn" id="labEnterBtn" disabled>Ingresar al agente →</button>
+    <p class="login-note">🎁 <b>5 días de prueba gratis</b> con acceso completo. 🔒 <b>Tu privacidad:</b> la API key se guarda solo en tu navegador y se borra al cerrar la pestaña. Este sitio no tiene backend ni registra tus datos.</p>
+  </div>
+  <div class="login-card" id="trialCard" style="display:none;">
+    <img src="favicon-192.png" alt="BarIA">
+    <h1>Tu prueba terminó</h1>
+    <p class="sub">Los 5 días de prueba gratuita de BarIA llegaron a su fin. Para seguir usándolo con onboarding 1 a 1 y soporte por WhatsApp, pasate al Plan Bar/Restaurante.</p>
+    <a class="btn btn-brand" style="width:100%;justify-content:center;text-decoration:none;" href="https://wa.me/5493425387578?text=Hola,%20se%20me%20venci%C3%B3%20la%20prueba%20de%20BarIA%20y%20quiero%20contratar%20el%20Plan%20Bar%2FRestaurante">Contratar por WhatsApp →</a>
+    <div style="margin-top:18px; padding-top:16px; border-top:1px dashed var(--border);">
+      <p style="font-size:12px; color:var(--muted); margin-bottom:8px;">¿Ya tenés tu código de acceso? Ingresalo acá</p>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="labAccessCodeInput" placeholder="Código de acceso" autocomplete="off" class="lab-key-input" style="font-family:inherit;">
+        <button id="labAccessCodeBtn" style="background:var(--accent,var(--brand)); color:#fff; border:none; border-radius:10px; padding:0 16px; font-weight:600; font-size:13px; cursor:pointer; white-space:nowrap;">Desbloquear</button>
+      </div>
+      <p id="labAccessCodeStatus" style="font-size:12px; margin-top:8px; min-height:16px;"></p>
+    </div>
+    <p class="login-note">¿Creés que es un error? Escribinos por el mismo WhatsApp y lo revisamos.</p>
   </div>
 </div>
 
-<!-- ============ APP ============ -->
-<div id="app">
-  <aside class="sidebar" id="sidebar">
-    <a href="index.html" class="side-logo">
-      <img src="favicon-192.png" alt="BarIA">
-      <div class="name">Bar<em>IA</em></div>
-    </a>
-    <a href="guia-completa.html" target="_blank" class="side-guide">📚 Guía</a>
+<div class="user-chip" id="userChip"><span id="userChipText"></span><button id="logoutBtn">Salir</button></div>
 
-    <button class="tab-btn active" data-tab="chat" onclick="switchTab('chat')"><span class="tab-icon">💬</span> Chat de bar/restaurante</button>
-    <button class="tab-btn" data-tab="tragos" onclick="switchTab('tragos')"><span class="tab-icon">🍸</span> Costeo de tragos</button>
-    <button class="tab-btn" data-tab="platos" onclick="switchTab('platos')"><span class="tab-icon">🍽️</span> Costeo de platos</button>
-    <button class="tab-btn" data-tab="normativa" onclick="switchTab('normativa')"><span class="tab-icon">⚖️</span> Normativa</button>
-    <button class="tab-btn" data-tab="uthgra" onclick="switchTab('uthgra')"><span class="tab-icon">👥</span> Sueldos UTHGRA</button>
-    <button class="tab-btn" data-tab="vencimientos" onclick="switchTab('vencimientos')"><span class="tab-icon">📅</span> Vencimientos <span class="soon">pronto</span></button>
-    <button class="tab-btn" data-tab="proveedores" onclick="switchTab('proveedores')"><span class="tab-icon">🧾</span> Proveedores <span class="soon">pronto</span></button>
-    <button class="tab-btn" data-tab="mermas" onclick="switchTab('mermas')"><span class="tab-icon">📉</span> Mermas <span class="soon">fase 2</span></button>
-    <button class="tab-btn" data-tab="menu" onclick="switchTab('menu')"><span class="tab-icon">📈</span> Ingeniería de menú <span class="soon">fase 3</span></button>
-    <button class="tab-btn" data-tab="memoria" onclick="switchTab('memoria')"><span class="tab-icon">🔄</span> Backup / Memoria</button>
-
-    <div class="sidebar-foot">
-      <div class="trial-pill" id="trialPill">🎁 4 días de prueba restantes</div>
-      <button class="logout-btn" onclick="resetTrial()">Cerrar sesión</button>
+<header class="top">
+  <div class="topbar">
+    <a href="index.html" class="brand"><img src="favicon-192.png" alt=""> Bar<em>IA</em></a>
+    <div class="right">
+      <a href="guia-completa.html" class="top-link">Guía</a>
+      <button class="icon-btn" id="themeToggle" title="Cambiar tema"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
     </div>
-  </aside>
+  </div>
+</header>
 
-  <main class="main">
-    <!-- TAB: CHAT -->
-    <div class="tab-panel active" id="tab-chat" style="padding:0">
-      <div class="chat-wrap">
-        <div class="chat-topbar">
-          <h2>💬 Chat de bar/restaurante</h2>
-          <select class="model-select" id="modelSelectChat">
-            <option value="claude-haiku-4-5-20251001">Haiku 4.5</option>
-            <option value="claude-sonnet-5">Sonnet 5</option>
-          </select>
-        </div>
-        <div class="chat-messages" id="chatMessages">
-          <div class="msg bot">Hola 🍸 Soy BarIA. Preguntame sobre costeo de tragos o platos, pour cost, food cost, normativa provincial, sueldos UTHGRA, o adjuntá una foto de una receta y la analizo en la conversación.</div>
-        </div>
-        <div class="chat-input-wrap">
-          <div class="chat-input-row">
-            <button class="chat-attach" title="Adjuntar foto o documento" onclick="document.getElementById('fileInput').click()">📎</button>
-            <input type="file" id="fileInput" accept="image/*,.pdf" style="display:none">
-            <textarea id="chatInput" placeholder="Ej: Fernet 50ml, Coca 200ml, hielo — lo vendo a $4.500, ¿cómo va el margen?" rows="1" onkeydown="handleChatKey(event)"></textarea>
-            <button class="chat-send" id="chatSendBtn" onclick="sendMessage()">Enviar</button>
-          </div>
-        </div>
+<div class="wrap">
+
+  <div class="tab-row">
+    <button class="tab-btn active" data-tab="chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px;margin-right:4px;flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Chat de bar/restaurante</button>
+    <button class="tab-btn" data-tab="tragos">🍸 Costeo de tragos</button>
+    <button class="tab-btn" data-tab="platos">🍽️ Costeo de platos</button>
+    <button class="tab-btn" data-tab="normativa">⚖️ Normativa</button>
+    <button class="tab-btn" data-tab="uthgra">👥 Sueldos UTHGRA</button>
+    <button class="tab-btn" data-tab="vencimientos">📅 Vencimientos <span class="soon-tag">pronto</span></button>
+    <button class="tab-btn" data-tab="proveedores">🧾 Proveedores <span class="soon-tag">pronto</span></button>
+    <button class="tab-btn" data-tab="mermas">📉 Mermas <span class="soon-tag">fase 2</span></button>
+    <button class="tab-btn" data-tab="menu">📈 Ing. de menú <span class="soon-tag">fase 3</span></button>
+    <button class="tab-btn" data-tab="memoria">🔄 Backup</button>
+  </div>
+
+  <div class="keybox">
+    <div class="f">
+      <label for="apiKeyInput">Tu API key de Anthropic</label>
+      <input id="apiKeyInput" type="password" placeholder="sk-ant-..." autocomplete="off">
+    </div>
+    <div class="f" style="max-width:280px;">
+      <label for="modelSelect">Modelo</label>
+      <select id="modelSelect">
+        <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (rápido y económico)</option>
+        <option value="claude-sonnet-5">Claude Sonnet 5 (recetas y fichas complejas)</option>
+      </select>
+    </div>
+    <p class="hint">Se guarda solo en tu navegador y se borra al cerrar la pestaña. La generás gratis en <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>.</p>
+  </div>
+
+  <!-- CHAT -->
+  <section class="panel active" id="panel-chat">
+    <div class="chat-box">
+      <div class="chat-msgs" id="chatMsgs">
+        <div class="cmsg ai"><b>BarIA:</b> Hola 🍸 Preguntame sobre costeo de tragos o platos, pour cost, food cost, normativa provincial, sueldos UTHGRA, o adjuntá una foto de una receta y la analizo en la conversación.</div>
+      </div>
+      <div class="attach-pill" id="attachPill" style="display:none;"></div>
+      <div class="chat-input-row">
+        <button class="attach-btn" id="attachBtn" title="Adjuntar foto o documento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21.44 11.05 12.25 20.24a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+        <input type="file" id="chatFile" accept=".pdf,.jpg,.jpeg,.png" style="display:none;">
+        <textarea id="chatInput" placeholder="Ej: Fernet 50ml, Coca 200ml, hielo — lo vendo a $4.500, ¿cómo va el margen?"></textarea>
+        <button class="btn btn-brand" id="chatSendBtn">Enviar</button>
       </div>
     </div>
+  </section>
 
-    <!-- TAB: COSTEO TRAGOS (placeholder, se completa después) -->
-    <div class="tab-panel" id="tab-tragos">
-      <div class="panel-head"><h2>🍸 Costeo de tragos</h2><p>Pour cost, rendimiento de botella y margen sugerido.</p></div>
-      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, usá el Chat para costear tragos — funciona igual, solo que sin la calculadora visual todavía.</p></div>
+  <!-- TRAGOS (placeholder — se completa en el próximo paso) -->
+  <section class="panel" id="panel-tragos">
+    <h2>🍸 Costeo de tragos</h2>
+    <p class="sub">Pour cost, rendimiento de botella y margen sugerido a partir de una receta.</p>
+    <div class="card">
+      <p class="empty">🛠️ Panel dedicado en construcción — por ahora usá el Chat, funciona igual.</p>
     </div>
+  </section>
 
-    <!-- TAB: COSTEO PLATOS (placeholder) -->
-    <div class="tab-panel" id="tab-platos">
-      <div class="panel-head"><h2>🍽️ Costeo de platos</h2><p>Food cost por porción desde tu ficha técnica.</p></div>
-      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, usá el Chat para costear platos — subí la foto de la ficha o escribí la receta.</p></div>
+  <!-- PLATOS (placeholder) -->
+  <section class="panel" id="panel-platos">
+    <h2>🍽️ Costeo de platos</h2>
+    <p class="sub">Food cost por porción a partir de tu ficha técnica.</p>
+    <div class="card">
+      <p class="empty">🛠️ Panel dedicado en construcción — por ahora usá el Chat, funciona igual.</p>
     </div>
+  </section>
 
-    <!-- TAB: NORMATIVA (placeholder) -->
-    <div class="tab-panel" id="tab-normativa">
-      <div class="panel-head"><h2>⚖️ Normativa por provincia</h2><p>Horarios de expendio, habilitaciones y bromatología.</p></div>
-      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, preguntale al Chat: "¿Cuál es el horario de expendio de alcohol en CABA?"</p></div>
+  <!-- NORMATIVA (placeholder) -->
+  <section class="panel" id="panel-normativa">
+    <h2>⚖️ Normativa por provincia</h2>
+    <p class="sub">Horarios de expendio, habilitaciones y bromatología.</p>
+    <div class="card">
+      <p class="empty">🛠️ Panel dedicado en construcción — preguntale al Chat por tu provincia.</p>
     </div>
+  </section>
 
-    <!-- TAB: UTHGRA (placeholder) -->
-    <div class="tab-panel" id="tab-uthgra">
-      <div class="panel-head"><h2>👥 Sueldos UTHGRA</h2><p>Categorías, básicos vigentes y adicionales.</p></div>
-      <div class="soon-box"><div class="icon">🛠️</div><h3>Panel dedicado en construcción</h3><p>Por ahora, preguntale al Chat: "¿Cuánto cobra un mozo categoría 3 en octubre 2025?"</p></div>
+  <!-- UTHGRA (placeholder) -->
+  <section class="panel" id="panel-uthgra">
+    <h2>👥 Sueldos UTHGRA</h2>
+    <p class="sub">Categorías, básicos vigentes y adicionales convencionales.</p>
+    <div class="card">
+      <p class="empty">🛠️ Panel dedicado en construcción — preguntale al Chat la categoría y el mes.</p>
     </div>
+  </section>
 
-    <!-- TAB: VENCIMIENTOS (placeholder) -->
-    <div class="tab-panel" id="tab-vencimientos">
-      <div class="panel-head"><h2>📅 Vencimientos de habilitaciones</h2><p>Libreta sanitaria, carnet y habilitación municipal.</p></div>
-      <div class="soon-box"><div class="icon">⏳</div><h3>Próximamente</h3><p>Vas a poder cargar tus vencimientos y recibir alertas antes de que venzan.</p></div>
-    </div>
+  <!-- VENCIMIENTOS (placeholder) -->
+  <section class="panel" id="panel-vencimientos">
+    <h2>📅 Vencimientos de habilitaciones</h2>
+    <p class="sub">Libreta sanitaria, carnet y habilitación municipal.</p>
+    <div class="card"><p class="empty">⏳ Próximamente.</p></div>
+  </section>
 
-    <!-- TAB: PROVEEDORES (placeholder) -->
-    <div class="tab-panel" id="tab-proveedores">
-      <div class="panel-head"><h2>🧾 Comparador de proveedores</h2><p>Cargá precios y compará por insumo.</p></div>
-      <div class="soon-box"><div class="icon">⏳</div><h3>Próximamente</h3><p>El mismo comparador que usa ConstructorIA, adaptado a insumos de bar y cocina.</p></div>
-    </div>
+  <!-- PROVEEDORES (placeholder) -->
+  <section class="panel" id="panel-proveedores">
+    <h2>🧾 Comparador de proveedores</h2>
+    <p class="sub">Cargá precios por insumo y compará — el mejor precio se marca solo.</p>
+    <div class="card"><p class="empty">⏳ Próximamente.</p></div>
+  </section>
 
-    <!-- TAB: MERMAS (placeholder, fase 2) -->
-    <div class="tab-panel" id="tab-mermas">
-      <div class="panel-head"><h2>📉 Control de mermas</h2><p>Stock teórico vs. real de barra y cocina.</p></div>
-      <div class="soon-box"><div class="icon">🔄</div><h3>Fase 2 del roadmap</h3><p>Todavía no está disponible — mirá el roadmap público en la landing.</p></div>
-    </div>
+  <!-- MERMAS (placeholder, fase 2) -->
+  <section class="panel" id="panel-mermas">
+    <h2>📉 Control de mermas</h2>
+    <p class="sub">Stock teórico vs. real de barra y cocina.</p>
+    <div class="card"><p class="empty">🔄 Fase 2 del roadmap.</p></div>
+  </section>
 
-    <!-- TAB: INGENIERÍA DE MENÚ (placeholder, fase 3) -->
-    <div class="tab-panel" id="tab-menu">
-      <div class="panel-head"><h2>📈 Ingeniería de menú</h2><p>Rentabilidad de cada ítem de tu carta.</p></div>
-      <div class="soon-box"><div class="icon">⏳</div><h3>Fase 3 del roadmap</h3><p>Todavía no está disponible — mirá el roadmap público en la landing.</p></div>
-    </div>
+  <!-- INGENIERÍA DE MENÚ (placeholder, fase 3) -->
+  <section class="panel" id="panel-menu">
+    <h2>📈 Ingeniería de menú</h2>
+    <p class="sub">Rentabilidad de cada ítem de tu carta.</p>
+    <div class="card"><p class="empty">⏳ Fase 3 del roadmap.</p></div>
+  </section>
 
-    <!-- TAB: MEMORIA / BACKUP (placeholder) -->
-    <div class="tab-panel" id="tab-memoria">
-      <div class="panel-head"><h2>🔄 Respaldo y sincronización</h2><p>Tus costeos hoy viven solo en este navegador.</p></div>
-      <div class="soon-box"><div class="icon">📎</div><h3>Conectá tu Google Sheets</h3><p>Respaldo automático y acceso desde otro dispositivo — próximamente en esta pestaña.</p></div>
+  <!-- MEMORIA / BACKUP (placeholder de conexión Google Sheets) -->
+  <section class="panel" id="panel-memoria">
+    <h2>🔄 Respaldo y sincronización</h2>
+    <p class="sub">Tus costeos hoy viven solo en este navegador. Conectá tu Google Sheets para respaldo automático.</p>
+    <div class="card">
+      <button class="btn btn-brand" id="btnConectarGoogle">Conectar con Google</button>
+      <div id="googleConnectedBadge" style="display:none;align-items:center;gap:10px;margin-top:10px;">
+        <span class="pill ok">✅ Conectado</span>
+        <a id="linkAbrirHoja" href="#" target="_blank" class="top-link">Abrir hoja ↗</a>
+        <button class="btn btn-ghost" id="btnDesconectarGoogle" style="padding:6px 12px;font-size:12.5px;">Desconectar</button>
+      </div>
+      <p id="googleConnectStatus" style="font-size:12.5px;color:var(--muted);margin-top:10px;"></p>
     </div>
-  </main>
+  </section>
+
 </div>
 
 <script>
-/* ============ ESTADO Y STORAGE ============ */
-const TRIAL_DAYS = 5;
-
-function getState(){
-  try{ return JSON.parse(localStorage.getItem('baria_state') || '{}'); }catch(e){ return {}; }
+/* ---------- Login con Google (backend compartido de LABStudio) ---------- */
+const LAB_AUTH_URL = 'https://vps-6064485-x.dattaweb.com/webhook/labstudio-auth';
+const LAB_AUTH_PROXY = 'https://vps-6064485-x.dattaweb.com/webhook/labstudio-auth-proxy';
+const LAB_CLIENT_ID = '770326349307-rv1uf77479oc8ejrsh3hmhkieqgous2o.apps.googleusercontent.com';
+const LAB_PRODUCTO = 'baria';
+const LAB_USER_KEY = 'baria_user';
+const LAB_ACCESS_CODE_KEY = 'labstudio_access_code_baria';
+let labUserData = null;
+async function labValidarCodigoAcceso(){
+  const input = document.getElementById('labAccessCodeInput');
+  const statusEl = document.getElementById('labAccessCodeStatus');
+  const btn = document.getElementById('labAccessCodeBtn');
+  const code = input.value.trim();
+  if (!code){ statusEl.textContent = 'Ingresá tu código de acceso.'; statusEl.style.color = '#c0392b'; return; }
+  btn.disabled = true;
+  statusEl.textContent = 'Verificando…';
+  statusEl.style.color = 'var(--muted)';
+  try{
+    const res = await fetch(LAB_AUTH_PROXY, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ access_token: code, product: LAB_PRODUCTO }) });
+    const data = await res.json();
+    if (!res.ok || data.error){
+      const motivos = { token_invalido:'Código inválido. Verificalo o escribinos por WhatsApp.', cuenta_suspendida:'Tu cuenta está suspendida. Escribinos por WhatsApp.', limite_alcanzado:'Alcanzaste el límite mensual. Escribinos por WhatsApp.' };
+      statusEl.textContent = motivos[data.motivo] || 'Código inválido o vencido.';
+      statusEl.style.color = '#c0392b';
+      btn.disabled = false;
+      return;
+    }
+    localStorage.setItem(LAB_ACCESS_CODE_KEY, code);
+    statusEl.textContent = '✅ Acceso desbloqueado. ¡Bienvenido!';
+    statusEl.style.color = 'var(--accent,var(--brand))';
+    setTimeout(()=>{
+      document.getElementById('loginOverlay').style.display = 'none';
+    }, 700);
+  }catch(e){
+    statusEl.textContent = '⚠️ No se pudo verificar. Probá de nuevo.';
+    statusEl.style.color = '#c0392b';
+    btn.disabled = false;
+    console.error('Error validando código de acceso:', e);
+  }
 }
-function setState(patch){
-  const s = Object.assign(getState(), patch);
-  localStorage.setItem('baria_state', JSON.stringify(s));
-  return s;
+async function labVerificarCodigoGuardado(){
+  const code = localStorage.getItem(LAB_ACCESS_CODE_KEY);
+  if (!code) return;
+  try{
+    const res = await fetch(LAB_AUTH_PROXY, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ access_token: code, product: LAB_PRODUCTO }) });
+    const data = await res.json();
+    if (res.ok && !data.error){
+      document.getElementById('loginOverlay').style.display = 'none';
+    } else {
+      localStorage.removeItem(LAB_ACCESS_CODE_KEY);
+    }
+  }catch(e){ /* sin conexión: se revalida en el próximo intento */ }
 }
-
-/* ============ LOGIN FLOW ============ */
-function mockGoogleLogin(){
-  // Placeholder: acá va la integración real de Google Identity Services
-  document.getElementById('step1').classList.remove('active');
-  document.getElementById('step2').classList.add('active');
-}
-function skipGoogle(){
-  document.getElementById('step1').classList.remove('active');
-  document.getElementById('step2').classList.add('active');
-}
-
-function enterApp(){
-  const key = document.getElementById('apiKeyInput').value.trim();
-  if(!key){ alert('Pegá tu API key de Anthropic para continuar.'); return; }
-  const model = document.getElementById('modelSelectLogin').value;
-
-  sessionStorage.setItem('baria_api_key', key);
-  sessionStorage.setItem('baria_model', model);
-
-  let s = getState();
-  if(!s.trialStart){ s = setState({ trialStart: Date.now() }); }
-
-  showApp();
-}
-
-function daysLeft(){
-  const s = getState();
-  if(!s.trialStart) return TRIAL_DAYS;
-  const elapsed = (Date.now() - s.trialStart) / (1000*60*60*24);
-  return Math.max(0, Math.ceil(TRIAL_DAYS - elapsed));
-}
-
-function showApp(){
-  const left = daysLeft();
-  if(left <= 0 && !getState().unlocked){
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('expiredScreen').style.display = 'flex';
+function labMostrarSesion(data){
+  const overlay = document.getElementById('loginOverlay');
+  const chip = document.getElementById('userChip');
+  if (data.plan === 'gratis' && data.trialExpirado){
+    document.getElementById('loginCard').style.display = 'none';
+    document.getElementById('trialCard').style.display = 'block';
+    overlay.style.display = 'flex';
+    chip.style.display = 'none';
+    labVerificarCodigoGuardado();
     return;
   }
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('expiredScreen').style.display = 'none';
-  document.getElementById('app').classList.add('active');
-  document.getElementById('trialPill').textContent = getState().unlocked
-    ? '✓ Plan Bar/Restaurante activo'
-    : `🎁 ${left} día${left===1?'':'s'} de prueba restantes`;
+  overlay.style.display = 'none';
+  chip.style.display = 'flex';
+  const plan = data.plan === 'gratis'
+    ? (typeof data.diasRestantes === 'number' ? 'Prueba · '+(data.diasRestantes <= 0 ? 'último día' : data.diasRestantes+' día'+(data.diasRestantes===1?'':'s')) : 'Prueba')
+    : 'Plan '+data.plan.charAt(0).toUpperCase()+data.plan.slice(1);
+  document.getElementById('userChipText').innerHTML = '<b>'+data.nombre+'</b> · '+plan;
 }
-
-function tryUnlock(){
-  const code = document.getElementById('unlockCode').value.trim();
-  // Placeholder: reemplazar por validación real contra tu propio backend/lista de códigos
-  if(code.length >= 6){
-    setState({ unlocked: true, unlockCode: code });
-    showApp();
-  } else {
-    alert('Código inválido. Si contrataste el plan, revisá el WhatsApp donde te lo enviamos.');
+async function labManejarLogin(response){
+  const st = document.getElementById('login-status');
+  st.textContent = 'Verificando…';
+  try{
+    const res = await fetch(LAB_AUTH_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ idToken: response.credential, producto: LAB_PRODUCTO }) });
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Error');
+    localStorage.setItem(LAB_USER_KEY, JSON.stringify(data));
+    labUserData = data;
+    if (data.plan === 'gratis' && data.trialExpirado){ labMostrarSesion(data); return; }
+    st.textContent = data.esNuevo ? '✅ ¡Cuenta creada, '+data.nombre+'! Completá el paso 2 y entrá.' : '✅ ¡Hola de nuevo, '+data.nombre+'!';
+    document.getElementById('labEnterBtn').disabled = false;
+  }catch(e){
+    st.textContent = '⚠️ No se pudo verificar el ingreso. Probá de nuevo.';
+    console.error('Login:', e);
   }
 }
-
-function resetTrial(){
-  sessionStorage.removeItem('baria_api_key');
-  document.getElementById('app').classList.remove('active');
-  document.getElementById('expiredScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('step2').classList.remove('active');
-  document.getElementById('step1').classList.add('active');
+function labInitLogin(){
+  if (typeof google === 'undefined' || !google.accounts || !google.accounts.id){ setTimeout(labInitLogin, 300); return; }
+  google.accounts.id.initialize({ client_id: LAB_CLIENT_ID, callback: labManejarLogin });
+  const btn = document.getElementById('google-signin-btn');
+  if (btn) google.accounts.id.renderButton(btn, { theme:'outline', size:'large', text:'continue_with', width: 300 });
 }
-
-// Al cargar: si ya hay key en sessionStorage (misma pestaña), entra directo
-window.addEventListener('DOMContentLoaded', () => {
-  if(sessionStorage.getItem('baria_api_key')){
-    showApp();
+document.getElementById('labEnterBtn').addEventListener('click', ()=>{
+  const k = document.getElementById('labKeyInput').value.trim();
+  if (k){
+    sessionStorage.setItem('baria_api_key', k);
+    const appInput = document.getElementById('apiKeyInput');
+    if (appInput){ appInput.value = k; appInput.dispatchEvent(new Event('input')); }
   }
+  if (labUserData) labMostrarSesion(labUserData);
+});
+document.getElementById('labAccessCodeBtn').addEventListener('click', labValidarCodigoAcceso);
+document.getElementById('labAccessCodeInput').addEventListener('keydown', (e)=>{ if (e.key==='Enter') labValidarCodigoAcceso(); });
+document.getElementById('logoutBtn').addEventListener('click', ()=>{
+  if (!confirm('¿Cerrar sesión?')) return;
+  localStorage.removeItem(LAB_USER_KEY);
+  document.getElementById('userChip').style.display = 'none';
+  document.getElementById('trialCard').style.display = 'none';
+  document.getElementById('loginCard').style.display = 'block';
+  document.getElementById('loginOverlay').style.display = 'flex';
+  document.getElementById('login-status').textContent = '';
+  document.getElementById('labEnterBtn').disabled = true;
+});
+(function(){
+  const savedKey = sessionStorage.getItem('baria_api_key');
+  if (savedKey) document.getElementById('labKeyInput').value = savedKey;
+  const saved = localStorage.getItem(LAB_USER_KEY);
+  if (saved){ try{ labMostrarSesion(JSON.parse(saved)); }catch(e){} }
+  labInitLogin();
+})();
+
+/* ---------- Estado y helpers ---------- */
+const $ = id => document.getElementById(id);
+const modelSelect = $('modelSelect');
+const fmt = n => '$' + Number(n||0).toLocaleString('es-AR',{maximumFractionDigits:0});
+
+const savedTheme = localStorage.getItem('baria_theme') || 'light';
+if (savedTheme==='dark') document.documentElement.setAttribute('data-theme','dark');
+$('themeToggle').innerHTML = savedTheme==='dark' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+$('themeToggle').addEventListener('click', () => {
+  const cur = document.documentElement.getAttribute('data-theme')==='dark' ? 'dark':'light';
+  const next = cur==='dark' ? 'light':'dark';
+  if (next==='dark') document.documentElement.setAttribute('data-theme','dark');
+  else document.documentElement.removeAttribute('data-theme');
+  localStorage.setItem('baria_theme', next);
+  $('themeToggle').innerHTML = next==='dark' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="15" height="15" style="vertical-align:-3px"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 });
 
-/* ============ TABS ============ */
-function switchTab(tab){
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
-  document.getElementById('sidebar').classList.remove('open');
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  $('panel-'+b.dataset.tab).classList.add('active');
+}));
+
+$('apiKeyInput').value = sessionStorage.getItem('baria_api_key') || '';
+$('apiKeyInput').addEventListener('input', e => sessionStorage.setItem('baria_api_key', e.target.value.trim()));
+const getApiKey = () => sessionStorage.getItem('baria_api_key') || $('apiKeyInput').value.trim();
+
+async function callClaude(messages, systemPrompt, maxTokens = 1500){
+  const key = getApiKey();
+  if (!key) throw new Error('NO_KEY');
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'content-type':'application/json',
+      'x-api-key':key,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({ model: modelSelect.value, max_tokens: maxTokens, system: systemPrompt, messages })
+  });
+  if (!res.ok){ const t = await res.text(); throw new Error('API_ERROR: '+res.status+' '+t); }
+  const data = await res.json();
+  return (data.content||[]).map(c=>c.text||'').join('\n');
+}
+function errMsg(e){
+  if (e.message==='NO_KEY') return '⚠️ Cargá tu API key de Anthropic arriba para usar la IA.';
+  if (e.message.includes('401')) return '⚠️ API key inválida. Revisala en console.anthropic.com.';
+  if (e.message.includes('429')) return '⚠️ Límite de uso alcanzado. Esperá un momento o revisá tu crédito.';
+  return '⚠️ Error al consultar la IA: '+e.message.slice(0,140);
+}
+async function fileToBase64(file){
+  return new Promise((ok,err)=>{ const r=new FileReader(); r.onload=()=>ok(r.result.split(',')[1]); r.onerror=err; r.readAsDataURL(file); });
+}
+async function pdfToText(file){
+  const buf = await file.arrayBuffer();
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+  const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+  let out='';
+  for (let i=1;i<=Math.min(pdf.numPages,15);i++){
+    const page = await pdf.getPage(i);
+    const tc = await page.getTextContent();
+    out += tc.items.map(it=>it.str).join(' ')+'\n';
+  }
+  return out.trim();
+}
+async function buildFileBlock(file){
+  if (file.type==='application/pdf'){
+    const text = await pdfToText(file);
+    if (text.length > 40) return { type:'text', text:'[Contenido del PDF adjunto "'+file.name+'"]:\n'+text.slice(0,30000) };
+    const b64 = await fileToBase64(file);
+    return { type:'document', source:{ type:'base64', media_type:'application/pdf', data:b64 } };
+  }
+  const b64 = await fileToBase64(file);
+  return { type:'image', source:{ type:'base64', media_type:file.type, data:b64 } };
 }
 
-/* ============ CHAT ============ */
-const SYSTEM_PROMPT = `Sos BarIA, un asistente experto para dueños y encargados de bares, restaurantes y cervecerías en Argentina.
-Tus especialidades:
-- Costeo de tragos: pour cost, rendimiento de botella, precio sugerido según margen objetivo. Pour cost ideal: 15% destilados, 20% cerveza tirada, 25% cerveza en botella, 30-40% vino (promedio general 18-24%).
-- Costeo de platos: food cost por porción desde una ficha técnica. Food cost ideal en gastronomía argentina: 28-33% (referencia FEHGRA).
-- Normativa provincial: horarios de expendio de alcohol, habilitaciones municipales, bromatología, libreta sanitaria — la normativa varía mucho por provincia y municipio, aclará siempre que conviene confirmar con la autoridad local.
-- Sueldos UTHGRA: categorías 1-6, básicos, adicionales convencionales, contribución solidaria.
-Sé directo y concreto: cuando alguien te da una receta, calculá el costo con los datos que tengas y pedí los precios de insumos que falten. No inventes precios de proveedores — si no los tenés, pedilos. Siempre aclará que las cifras normativas y de convenio deben confirmarse porque cambian con frecuencia.`;
+/* ---------- Chat ---------- */
+const SYSTEM_CHAT = `Sos el asistente de bar y restaurante de BarIA, para dueños, encargados y bartenders en Argentina. Ayudás con: costeo de tragos (pour cost, rendimiento de botella — ideal 15% destilados, 20% cerveza tirada, 25% cerveza en botella, 30-40% vino), costeo de platos (food cost por porción, ideal 28-33% según FEHGRA), normativa de expendio de alcohol y habilitaciones por provincia, y sueldos UTHGRA por categoría y paritaria. Respondé en español rioplatense, claro y al grano, con números concretos cuando se pueda. Si te adjuntan una foto de receta o ficha técnica, analizala. No inventés precios de insumos ni cifras normativas exactas y actuales: pedí los precios que falten y aclará que conviene confirmar horarios/habilitaciones con el municipio y paritarias con la fuente oficial, porque cambian con frecuencia.`;
+let chatHistory = [];
+let chatAttach = null;
 
-function handleChatKey(e){
-  if(e.key === 'Enter' && !e.shiftKey){
-    e.preventDefault();
-    sendMessage();
+$('attachBtn').addEventListener('click', ()=>$('chatFile').click());
+$('chatFile').addEventListener('change', e => {
+  chatAttach = e.target.files[0] || null;
+  $('attachPill').style.display = chatAttach ? 'block':'none';
+  $('attachPill').textContent = chatAttach ? '📎 '+chatAttach.name+' — se enviará con tu próximo mensaje' : '';
+});
+function addMsg(cls, html){
+  const d = document.createElement('div');
+  d.className = 'cmsg '+cls;
+  d.innerHTML = html;
+  $('chatMsgs').appendChild(d);
+  $('chatMsgs').scrollTop = $('chatMsgs').scrollHeight;
+  return d;
+}
+function mdLite(t){
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+}
+async function sendChat(){
+  const text = $('chatInput').value.trim();
+  if (!text && !chatAttach) return;
+  $('chatInput').value='';
+  addMsg('user', mdLite(text || '(archivo adjunto)'));
+  const content = [];
+  if (chatAttach){ try{ content.push(await buildFileBlock(chatAttach)); }catch(e){ addMsg('ai','⚠️ No pude leer el adjunto: '+e.message); } chatAttach=null; $('chatFile').value=''; $('attachPill').style.display='none'; }
+  content.push({ type:'text', text: text || 'Analizá el archivo adjunto.' });
+  chatHistory.push({ role:'user', content });
+  const loader = addMsg('ai','<span class="loading"><span></span><span></span><span></span></span>');
+  try{
+    const reply = await callClaude(chatHistory, SYSTEM_CHAT, 1500);
+    chatHistory.push({ role:'assistant', content: reply });
+    if (chatHistory.length > 16) chatHistory = chatHistory.slice(-16);
+    loader.innerHTML = '<b>BarIA:</b> '+mdLite(reply);
+  }catch(e){
+    chatHistory.pop();
+    loader.innerHTML = errMsg(e);
   }
 }
+$('chatSendBtn').addEventListener('click', sendChat);
+$('chatInput').addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey){ e.preventDefault(); sendChat(); } });
 
-let chatHistory = [];
+/* ---------- Sincronización con Google Sheets propio (mismo patrón que ConstructorIA/CampoIA) ---------- */
+const GOOGLE_CLIENT_ID = LAB_CLIENT_ID;
+let googleAccessToken = localStorage.getItem('baria_google_token') || '';
+let googleTokenExpira = parseInt(localStorage.getItem('baria_google_token_expira') || '0');
+let bariaSheetId = localStorage.getItem('baria_sheet_id') || '';
+let googleTokenClient = null;
 
-async function sendMessage(){
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if(!text) return;
+function inicializarGoogleAuth(){
+  if (typeof google === 'undefined' || !google.accounts){ setTimeout(inicializarGoogleAuth, 300); return; }
+  googleTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/spreadsheets https://www.googleapis.com/auth/drive.file',
+    callback: ''
+  });
+  if (bariaSheetId) actualizarUIGoogleConectado();
+}
+inicializarGoogleAuth();
 
-  const messagesEl = document.getElementById('chatMessages');
-  messagesEl.insertAdjacentHTML('beforeend', `<div class="msg user">${escapeHtml(text)}</div>`);
-  chatHistory.push({ role: 'user', content: text });
-  input.value = '';
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+$('btnConectarGoogle').addEventListener('click', () => {
+  if (!googleTokenClient){ alert('La conexión con Google todavía está cargando, esperá unos segundos e intentá de nuevo.'); return; }
+  const msg = $('googleConnectStatus');
+  msg.textContent = 'Conectando con Google...';
+  googleTokenClient.callback = async (resp) => {
+    if (resp.error){ msg.textContent = '⚠️ No se pudo conectar: ' + resp.error; return; }
+    googleAccessToken = resp.access_token;
+    googleTokenExpira = Date.now() + (resp.expires_in * 1000);
+    localStorage.setItem('baria_google_token', googleAccessToken);
+    localStorage.setItem('baria_google_token_expira', String(googleTokenExpira));
+    if (!bariaSheetId) await crearHojaBarIA();
+    else { msg.textContent = '✅ Conectado con Google Sheets.'; actualizarUIGoogleConectado(); }
+  };
+  googleTokenClient.requestAccessToken({ prompt: bariaSheetId ? '' : 'consent' });
+});
 
-  const loadingId = 'loading-' + Date.now();
-  messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot loading" id="${loadingId}">Pensando...</div>`);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+async function asegurarTokenValido(){
+  if (googleAccessToken && Date.now() < googleTokenExpira - 60000) return true;
+  return new Promise((resolve) => {
+    googleTokenClient.callback = (resp) => {
+      if (resp.error){ resolve(false); return; }
+      googleAccessToken = resp.access_token;
+      googleTokenExpira = Date.now() + (resp.expires_in * 1000);
+      localStorage.setItem('baria_google_token', googleAccessToken);
+      localStorage.setItem('baria_google_token_expira', String(googleTokenExpira));
+      resolve(true);
+    };
+    googleTokenClient.requestAccessToken({ prompt: '' });
+  });
+}
 
-  const apiKey = sessionStorage.getItem('baria_api_key');
-  const model = document.getElementById('modelSelectChat').value || sessionStorage.getItem('baria_model') || 'claude-haiku-4-5-20251001';
+const HOJAS_BARIA = {
+  tragos: { nombre: 'Costeo_Tragos', headers: ['Fecha','Receta','Costo','Pour cost %','Rinde botella','Precio venta'] },
+  platos: { nombre: 'Costeo_Platos', headers: ['Fecha','Plato','Costo porción','Food cost %','Precio venta'] },
+  proveedores: { nombre: 'Precios_Proveedores', headers: ['Fecha','Insumo','Proveedor','Precio','Unidad'] }
+};
 
+async function crearHojaBarIA(){
+  const msg = $('googleConnectStatus');
+  msg.textContent = 'Creando tu hoja de cálculo...';
   try{
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const resCrear = await fetch('https://sheets.googleapis.com/v4/spreadsheets', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Authorization': 'Bearer ' + googleAccessToken, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: model,
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: chatHistory
+        properties: { title: 'BarIA - Mis Datos' },
+        sheets: Object.values(HOJAS_BARIA).map(h => ({ properties: { title: h.nombre } }))
       })
     });
-    const data = await res.json();
-    document.getElementById(loadingId).remove();
-
-    if(data.error){
-      messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot" style="color:var(--red)">Error: ${escapeHtml(data.error.message || 'algo salió mal')}</div>`);
-    } else {
-      const answer = (data.content || []).map(b => b.text || '').join('\n');
-      chatHistory.push({ role: 'assistant', content: answer });
-      messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot">${escapeHtml(answer)}</div>`);
+    const data = await resCrear.json();
+    if (!resCrear.ok) throw new Error(data.error?.message || 'Error creando la hoja');
+    bariaSheetId = data.spreadsheetId;
+    localStorage.setItem('baria_sheet_id', bariaSheetId);
+    for (const h of Object.values(HOJAS_BARIA)){
+      await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${bariaSheetId}/values/${encodeURIComponent(h.nombre)}!A1:${String.fromCharCode(65 + h.headers.length - 1)}1?valueInputOption=RAW`, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + googleAccessToken, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ values: [h.headers] })
+      });
     }
-  } catch(err){
-    document.getElementById(loadingId).remove();
-    messagesEl.insertAdjacentHTML('beforeend', `<div class="msg bot" style="color:var(--red)">No se pudo conectar con Anthropic. Revisá tu API key y conexión.</div>`);
+    msg.textContent = '✅ ¡Listo! Tu hoja fue creada y conectada.';
+    actualizarUIGoogleConectado();
+  }catch(e){
+    msg.textContent = '⚠️ Error creando la hoja: ' + e.message;
   }
-  messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-function escapeHtml(str){
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+function actualizarUIGoogleConectado(){
+  $('googleConnectedBadge').style.display = 'flex';
+  $('btnConectarGoogle').style.display = 'none';
+  $('linkAbrirHoja').href = `https://docs.google.com/spreadsheets/d/${bariaSheetId}/edit`;
+}
+
+$('btnDesconectarGoogle').addEventListener('click', () => {
+  if (!confirm('¿Desconectar tu Google Sheets? Vas a poder volver a conectarte cuando quieras — tu hoja no se borra.')) return;
+  googleAccessToken = ''; googleTokenExpira = 0; bariaSheetId = '';
+  localStorage.removeItem('baria_google_token');
+  localStorage.removeItem('baria_google_token_expira');
+  localStorage.removeItem('baria_sheet_id');
+  $('googleConnectedBadge').style.display = 'none';
+  $('btnConectarGoogle').style.display = 'flex';
+  $('googleConnectStatus').textContent = '';
+});
+
+// Agrega una fila a la hoja correspondiente. No bloqueante — si falla, no interrumpe al usuario.
+async function registrarFilaSheets(claveHoja, fila){
+  if (!bariaSheetId) return;
+  const h = HOJAS_BARIA[claveHoja];
+  if (!h) return;
+  const ok = await asegurarTokenValido();
+  if (!ok) return;
+  try{
+    await fetch(`https://sheets.googleapis.com/v4/spreadsheets/${bariaSheetId}/values/${encodeURIComponent(h.nombre)}!A:Z:append?valueInputOption=RAW`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + googleAccessToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ values: [fila] })
+    });
+  }catch(e){
+    console.warn('Registro a Google Sheets falló silenciosamente:', e);
+  }
 }
 </script>
 </body>
